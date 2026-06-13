@@ -1,0 +1,20 @@
+name: ai-proxy
+
+services:
+  isf-ai-proxy:
+    image: donaldloo/ai-proxy:main
+    container_name: isf-ai-proxy
+    ports:
+      - "8066:8080"
+    env_file:
+      - .env.ai_proxy
+    volumes:
+      - ./data/proxy_data:/app/data
+      - ./models.yaml:/app/models.yaml
+    restart: unless-stopped
+    networks:
+      - default
+
+networks:
+  default:
+    driver: bridge

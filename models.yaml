@@ -1,0 +1,80 @@
+models:
+  gemini-flash-lite:
+    provider: gemini
+    model_id: gemini-2.5-flash-lite
+    description: Smallest and most cost effective model, built for at scale usage.
+    cost_input_per_1m: 0.1
+    cost_output_per_1m: 0.4
+  gemini-flash-3.1-lite:
+    provider: gemini
+    model_id: gemini-3.1-flash-lite-preview
+    description: Smallest and most cost effective model, built for at scale usage.
+    cost_input_per_1m: 0.25
+    cost_output_per_1m: 1.5
+  gemini-3.5-flash:
+    provider: gemini
+    model_id: gemini-3.5-flash
+    description:
+      Hybrid reasoning model which supports a 1M token context window and
+      has thinking budgets.
+    cost_input_per_1m: 1.5
+    cost_output_per_1m: 9.0
+  gemini-thinking:
+    provider: gemini
+    model_id: gemini-2.5-pro
+    description:
+      State-of-the-art multipurpose model, which excels at coding and complex
+      reasoning tasks.
+    cost_input_per_1m: 1.25
+    cost_output_per_1m: 10.0
+  gemini-intelligent-tool:
+    provider: gemini
+    model_id: gemini-3.1-pro-preview-customtools
+    description: Built for custom tools, combining frontier intelligence
+    cost_input_per_1m: 2.0
+    cost_output_per_1m: 12.0
+  gemini-powerful:
+    provider: gemini
+    model_id: gemini-3.1-pro-preview
+    description: Most powerful agentic and vibe-coding model.
+    cost_input_per_1m: 2.0
+    cost_output_per_1m: 12.0
+  gemini-embedding:
+    provider: gemini
+    model_id: models/gemini-embedding-001
+    description: Embedding model
+    cost_input_per_1m: 0.15
+    cost_output_per_1m: 0.0
+  deepseek-v4-pro:
+    provider: deepseek
+    model_id: deepseek-v4-pro
+    base_url: https://api.deepseek.com
+    description: DeepSeek's latest frontier pro model with reasoning capabilities.
+    cost_input_per_1m: 0.22
+    cost_output_per_1m: 0.87
+  deepseek-v4-flash:
+    provider: deepseek
+    model_id: deepseek-v4-flash
+    base_url: https://api.deepseek.com
+    description: DeepSeek's latest frontier flash model with reasoning capabilities.
+    cost_input_per_1m: 0.07
+    cost_output_per_1m: 0.28
+  gpt-4o:
+    provider: openai
+    model_id: gpt-4o
+    description: OpenAI's high-intelligence flagship model.
+    cost_input_per_1m: 2.5
+    cost_output_per_1m: 10.0
+roles:
+  default: gemini-3.5-flash
+  fast: gemini-flash-lite
+  planner: gemini-powerful
+  coder: deepseek-v4-pro
+  critique: gemini-powerful
+  tester: gemini-powerful
+  sonar_fixer: gemini-3.5-flash
+  testing_engineer: gemini-3.5-flash
+  auto_agent: gemini-powerful
+  expert: gemini-powerful
+  mermaid_syntax_corrector: gemini-powerful
+  embedding: gemini-embedding

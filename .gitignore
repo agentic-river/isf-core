@@ -1,0 +1,43 @@
+# ==========================
+# 1. SECURITY & CONFIG
+# ==========================
+.env
+!.env.sample
+!.env.ai_proxy.example
+*.pem
+*.key
+
+# ==========================
+# 2. PYTHON RUNTIME
+# ==========================
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+*.egg-info
+
+# ==========================
+# 3. RUNTIME DATA (user-generated, not tracked)
+# ==========================
+data/
+*.log
+*.db
+token_cache.bin
+
+# ==========================
+# 4. OS & EDITOR
+# ==========================
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ==========================
+# 5. DOCKER RUNTIME
+# ==========================
+volumes/
+backups/

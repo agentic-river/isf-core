@@ -1,0 +1,97 @@
+# compose.mac.yml — macOS standalone compose for ISF Core (SQLite Mode)
+# Identical to compose.yml but without /etc/timezone (does not exist on macOS).
+# Usage: docker compose -f compose.mac.yml up
+
+name: ai-core
+
+services:
+  # The Infinite Software Factory — SQLite Mode (No Supabase)
+  isf-core:
+    image: donaldloo/isf-factory:main
+    container_name: isf-core
+    ports:
+      - "3006:8002" # Offset port to avoid collision with isf-prod (3004) and isf-dev (3000)
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # Access Shared Services (Proxy, Sonar)
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8002/api/status || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    working_dir: /workspace
+    volumes:
+      # 1. The Workspace: Where ISF builds YOUR app
+      - ./:/workspace
+      # 2. The Engine: Allowing ISF to spawn Dev/Stage/Prod containers
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/localtime:/etc/localtime:ro # SYNC HOST TIMEZONE
+      # 3. Memory: Persistent storage for Agents (Chat logs, Audit trail)
+      - ./data:/app/data
+      - ./backend/data:/app/backend/data
+    environment:
+      - PYTHONPATH=/app:/workspace
+      # --- SHARED INFRASTRUCTURE (Running on Host) ---
+      # Connects to the main 'ai-dev' stack via host.docker.internal
+      - AI_PROXY_URL=http://isf-ai-proxy:8080
+      - BACKEND_HOSTNAME=isf-core
+      # - SONAR_PROJECT_KEY=${SONAR_PROJECT_KEY}
+      # - SONAR_URL=http://host.docker.internal:9000
+      # - SONAR_TOKEN=${SONAR_TOKEN}
+
+      # --- NO SUPABASE (SQLite Fallback Mode) ---
+      - SUPABASE_URL=
+      - SUPABASE_KEY=
+      - SUPABASE_SERVICE_ROLE_KEY=
+      - SUPABASE_DB_URL=
+
+      # tavily.com
+      - TAVILY_API_KEY=${TAVILY_API_KEY}
+      # --- DEDICATED PROJECT INFRASTRUCTURE (Local Containers) ---
+      # # Knowledge Graph (Dedicated to this project)
+      # - NEO4J_URL=${NEO4J_URL}
+      # - NEO4J_USER=${NEO4J_USER}
+      # - NEO4J_PASSWORD=${NEO4J_PASSWORD}
+
+      # # Vector Database (Dedicated to this project)
+      # - POSTGRES_HOST=ai_vectordb
+      # - POSTGRES_PORT=5432
+      # - POSTGRES_USER=ai_user
+      # - POSTGRES_PASSWORD=ai_password
+      # - POSTGRES_DB=ai_knowledge_base
+
+      # --- CONFIGURATION ---
+      - ISF_LICENSE_KEY=Your_ISF_License_Key_Here
+      - HOST_WORK_DIR=${PWD}
+      - GIT_USER=${GIT_USER:-DLoo}
+      - GIT_EMAIL=${GIT_EMAIL:-loo.donald@gmail.com}
+
+      # - MCP_GATEWAY_URL=http://mcp-gateway:8811
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN_C1}
+      - ALLOWED_TELEGRAM_IDS=${ALLOWED_TELEGRAM_IDS}
+      # - MS_GRAPH_CLIENT_ID=${MS_GRAPH_CLIENT_ID}
+      # - MS_GRAPH_TENANT_ID=${MS_GRAPH_TENANT_ID}
+      - FASTAPI_PORT=8002
+      - HOST=0.0.0.0
+      - APP_ENV=production
+      # - TEST_FRONTEND_URL=http://localhost:3001
+    networks:
+      - default
+      # NOTE: supabase_shared_net intentionally removed
+  isf-ai-proxy:
+    image: donaldloo/ai-proxy:main
+    container_name: isf-ai-proxy
+    ports:
+      - "8066:8080"
+    env_file:
+      - .env.ai_proxy
+    volumes:
+      - ./data/proxy_data:/app/data
+      - ./models.yaml:/app/models.yaml
+    restart: unless-stopped
+    networks:
+      - default
+
+networks:
+  default:
+    driver: bridge
