@@ -7,7 +7,7 @@ name: ai-core
 services:
   # The Infinite Software Factory — SQLite Mode (No Supabase)
   isf-core:
-    image: donaldloo/isf-factory:main
+    image: agenticriver/isf-factory:main
     container_name: isf-core
     ports:
       - "3006:8002" # Offset port to avoid collision with isf-prod (3004) and isf-dev (3000)
@@ -79,7 +79,7 @@ services:
       - default
       # NOTE: supabase_shared_net intentionally removed
   isf-ai-proxy:
-    image: donaldloo/ai-proxy:main
+    image: agenticriver/ai-proxy:main
     container_name: isf-ai-proxy
     ports:
       - "8066:8080"

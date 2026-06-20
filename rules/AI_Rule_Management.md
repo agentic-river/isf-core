@@ -3,11 +3,16 @@
 This document defines the strict protocol for how AI agents must handle, create, and modify project rules and guidelines within this repository.
 
 ## 1. Rule Storage Location
-**CRITICAL:** All rules, guidelines, and AI behavior instructions MUST be saved in the `rules/` directory at the root of the project. 
+**CRITICAL:** All rules, guidelines, and AI behavior instructions MUST be saved in the `rules/` directory at the root of the project.
 
-*   🟢 **Correct:** `rules/API_Conventions_Guide.md`
-*   🔴 **Incorrect:** `docs/API_Conventions.md`
-*   🔴 **Incorrect:** `API_Conventions.md` (Root directory)
+*   🟢 **Correct for AI Rules:** `rules/API_Conventions_Guide.md`
+*   🔴 **Incorrect for AI Rules:** `docs/API_Conventions.md` (Rules do not belong in docs)
+*   🔴 **Incorrect for AI Rules:** `API_Conventions.md` (Root directory)
+
+### ⚠️ IMPORTANT DISTINCTION: Rules vs. Documentation
+- **Rules (`rules/`)**: AI behavioral protocols, coding standards, instructions (e.g., "Always use `smart_replace`").
+- **Documentation (`docs/`)**: System architecture, tech specs, API references, feature mechanics (e.g., `chat_persistence_architecture.md`).
+- **Grader Exemption**: It is 100% EXPECTED and ALLOWED for AI agents to update system documentation in the `docs/` folder when code changes. The Pre-flight Grader MUST NOT flag `docs/` modifications as a violation of this rule unless the AI is incorrectly placing a behavioral "AI Rule" into the `docs/` folder.
 
 If a user asks you to "add a rule", "create a guideline", or "save these instructions", you MUST automatically target the `rules/` directory. If the directory does not exist, you must create it.
 

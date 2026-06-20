@@ -1,54 +1,66 @@
-# 🌐 Option 6 Setup Guide: Browser Automation & Playwright Web Navigation
+# 🌐 Option 6 Setup Guide: Browser Automation & Playwright Web Navigation (V2)
 
-This guide outlines how to configure **Browser Automation (Playwright headless Chrome)** in ISF-Core. This equips your AI agents with virtual "hands" to log into external company web portals, parse leave balances, schedule calendar appointments, or approve pending requests.
-
-## Why Enable Browser Automation?
-* **Legacy System Bridges:** Many legacy enterprise tools (like eLeave or Summit) lack functional APIs. Browser automation bridges this gap by letting the AI navigate pages exactly like a human would.
-* **Complex UI Workflows:** Agents can perform multi-step web processes, such as downloading reports, filling forms, and filing IT tickets.
-* **Visual Audit Logs:** At every step of a browser run, the agent captures screenshots and console logs, storing them securely in your workspace so you can audit the actions visually.
+This guide outlines how to setup, configure, and use **Host-Native Browser Automation (Playwright MCP)** in ISF-Core. This architecture equips your AI agents with virtual "hands" to log into external company web portals and bypass Docker networking hurdles to access local dev servers.
 
 ---
 
-## Step 1: Verify Chrome/Playwright Container Status
+## 1. Setup (Host-Native Execution)
 
-ISF-Core includes a dedicated headless browser container running alongside the engine. Ensure your `docker-compose.yml` includes the browser runner service:
+ISF-Core V2 moved away from a containerized browser to a Host-Native MCP Server. You MUST run the daemon natively on your host machine alongside your Docker containers so the browser can access your local VPNs and `localhost` servers.
 
-1. Look for the `browser-agent` block in your `docker-compose.yml`:
-   ```yaml
-   browser-agent:
-     image: mcr.microsoft.com/playwright:v1.40.0-focal
-     ports:
-       - "8899:8899"
-     environment:
-       - PORT=8899
-   ```
-2. Confirm the service is running:
+1. **Create the Virtual Environment:** Ensure your Python environment is set up on the host:
    ```bash
-   docker compose ps browser-agent
+   uv venv
+   uv pip sync requirements.txt
    ```
+2. **(Optional) Compile the Daemon:** For optimal performance, you can compile the AI Manager package into a Nuitka module:
+   ```bash
+   ./build_ai_manager_daemon.sh
+   ```
+3. **Start the AI Manager Daemon:** Use the provided startup script:
+   ```bash
+   ./start_ai_manager_daemon.sh
+   ```
+   This will launch the daemon (running `ai_manager/daemon.py`) natively on your host machine, which automatically routes traffic via the backend MCP Gateway.
 
 ---
 
-## Step 2: Encrypt & Store Portal Credentials
+## 2. Configure (Credentials Management)
 
-To let the agent log into external portals on your behalf, you must save credentials in the `browser_credentials` table (which is fully encrypted locally):
+To let the agent log into external portals on your behalf, credentials must be securely stored in the system's Vault (`browser_credentials` table). 
 
-1. Open your Web Dashboard (`http://localhost:3001`).
-2. Go to the **Credentials Manager** or run an interactive SQL query to store credentials securely:
-   ```sql
-   INSERT INTO browser_credentials (portal_name, username, encrypted_password)
-   VALUES ('eLeave_Portal', 'your_employee_id', 'AES_ENCRYPTED_PASSWORD_HERE');
-   ```
+The easiest and recommended way to manage this is directly through the Chat UI:
+
+1. **Ask the AI:** Instruct the Chat AI to insert or update the credentials for you. 
+   - *Example:* "Save my browser credentials for 'example-portal.com' with username 'my_id' and my password."
+2. **Verify Registration:** 
+   - Open your Web Dashboard (`http://localhost:3001`).
+   - Navigate to the **Browser Agent Dashboard -> Vault** to visually confirm the domain and username are registered.
+   - Alternatively, you can ask the AI to query the `browser_credentials` database table directly to ensure the setup is correct.
 
 ---
 
-## Step 3: Triggering Browser Agents
+## 3. Usage (The Discovery & Fast-Track Workflow)
 
-You can invoke browser agents directly via the chat dashboard or delegate them to background cron jobs:
+Once the daemon is running and credentials are in the vault, you can begin automating web tasks. The optimal workflow leverages the AI to do the heavy lifting:
 
-1. **Ask Chat:**
-   > *"Navigate to eLeave portal and pull my annual leave balance."*
-2. **Execution Flow:**
-   * The orchestration engine calls the `eLeave_Portal` module.
-   * Playwright launches a headless browser, navigates to the login screen, decrypts and injects your credentials, and navigates to the balance page.
-   * The agent parses the DOM text, captures a screenshot, closes the browser, and replies: *"You have 14 days of Annual Leave remaining (screenshot attached)."*
+### Step A: Site Discovery (Slow Path)
+Use the Chat AI to manually explore the target site.
+- **Prompt Example:** *"Go to example-portal.com, log in using my vault credentials, and figure out the exact DOM steps to export the monthly report. Take screenshots along the way."*
+- The AI will use Host-Native Playwright tools (`browser_navigate`, `browser_click`, `browser_snapshot`) to navigate the site, read the ARIA accessibility trees, and map out the process.
+
+### Step B: Generate the "Fast Track" Script
+Once the AI successfully navigates the workflow in Discovery Mode, instruct it to write a permanent script.
+- **Prompt Example:** *"Now that you know how the site works, use the rule `@rules/Agentic_Browser_Automation_V2_Guide.md` to write a Fast Track Python script in the `browser-agents/` directory."*
+- **For the AI Agent:** The AI MUST ALWAYS refer to the strict guidelines defined in `@rules/Agentic_Browser_Automation_V2_Guide.md` when writing or updating browser automation scripts. This ensures the script inherits `BrowserAgent`, handles `asyncio` correctly, uses `get_credentials`, and captures traces properly.
+- The AI will generate a highly optimized, resilient Python script utilizing the `BrowserAgent` base class, complete with secure credential injection and error handling.
+
+### Step C: Instant Execution
+Once the script is saved in the `browser-agents/` folder, the backend dynamically discovers it. 
+Future requests (e.g., *"Export my monthly report"*) will bypass the slow Discovery Mode and instantly execute your new Fast Track script in the background!
+
+### Step D: Schedule Automated Execution (Cron Jobs)
+Once you have generated your "Fast Track" script, you can schedule it to run automatically on a regular interval (e.g., daily at 8 AM). 
+- Instruct the AI to set up a scheduled task for your browser script.
+- *Prompt Example:* "Schedule my monthly report browser agent to run on the 1st of every month at 9 AM."
+- **For the AI Agent:** When setting up cron jobs, the AI MUST refer to the strict guidelines defined in `@rules/Cron_Service_and_Job_Scheduling_Spec.md`. This rule dictates how to properly use the `register_cron_job` tool to configure the execution engine and target protocol.

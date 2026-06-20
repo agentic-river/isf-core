@@ -44,7 +44,7 @@ When the AI generates or refines Python scripts for `browser-agents/`, it must a
 ## 4. Phase 4 - Automated Verification (MANDATORY TEST HARNESS)
 Agents MUST NOT ask the user to manually test newly generated or modified "Fast Path" scripts. 
 Whenever a script in `browser-agents/` is created or modified, the agent MUST run the local test harness:
-`python backend/core/testing_tools/test_browser_agent.py`
+`python -m backend.core.testing_tools.run_browser_agent --agent <agent_name> --action <action_name>`
 If the test harness fails or throws an error (such as a database schema mapping mismatch or an ASP.NET postback crash), the AI MUST debug and fix the script until the test harness passes perfectly BEFORE informing the user that the task is complete.
 
 
@@ -137,31 +137,30 @@ async def _capture_and_upload_screenshot(page, label: str = "debug") -> str:
     """
     Take a full-page screenshot, upload to the AI proxy, and return a file_uri
     for multimodal vision ingestion by the AI agent.
-    
+
     Args:
         page: Playwright Page object
         label: Descriptive label for the screenshot filename
-    
+
     Returns:
         A file_uri string (e.g., "gs://...") that the AI's vision model can ingest.
         Returns None if upload fails.
     """
     task_name = TASK_METADATA["name"]
     filename = f"{task_name}_{label}.png"
-    path = f"/tmp/{filename}"
-    
-    await page.screenshot(path=path, full_page=True)
-    
+
+    # Capture screenshot directly to memory as bytes (eliminates the /tmp security hotspot)
+    content = await page.screenshot(full_page=True)
+
     proxy_url = f"{os.getenv('AI_PROXY_URL', 'http://localhost:8080')}/v1/upload"
     try:
         async with httpx.AsyncClient(timeout=30.0) as client:
-            with open(path, "rb") as f:
-                resp = await client.post(
-                    proxy_url,
-                    files={"file": (filename, f, "image/png")}
-                )
-                resp.raise_for_status()
-                upload_data = resp.json()
+            resp = await client.post(
+                proxy_url,
+                files={"file": (filename, content, "image/png")}
+            )
+            resp.raise_for_status()
+            upload_data = resp.json()
         return upload_data.get("file_uri")
     except Exception as e:
         print(f"[Screenshot] Upload failed: {e}")

@@ -10,7 +10,6 @@ IMAGE_PNG_MIME_TYPE = "image/png"
 
 class CaptureTokenUsageSchema(BaseModel):
     url: str = Field(default="http://localhost:3001", description="The URL of the application to capture.")
-    output_dir: str = Field(default="tmp", description="Directory to save screenshots.")
 
 
 TASK_METADATA = {
@@ -43,28 +42,17 @@ async def _capture_aria_snapshot_via_mcp() -> str:
         return ""
 
 
-def _read_file_sync(filepath: str) -> bytes:
+async def _upload_screenshot_to_proxy(img_data: bytes, filename: str) -> Optional[str]:
     """
-    Synchronously read a file as bytes.
-    """
-    with open(filepath, "rb") as f:
-        return f.read()
-
-
-async def _upload_screenshot_to_proxy(filepath: str) -> Optional[str]:
-    """
-    Upload a local screenshot file to the AI proxy and return a file_uri
+    Upload in-memory screenshot bytes to the AI proxy and return a file_uri
     for multimodal vision ingestion by the AI agent.
     """
-    filename = os.path.basename(filepath)
     proxy_url = f"{os.getenv('AI_PROXY_URL', 'http://localhost:8080')}/v1/upload"
     try:
-        # Read the file bytes asynchronously in a separate thread to avoid blocking the event loop
-        file_bytes = await asyncio.to_thread(_read_file_sync, filepath)
         async with httpx.AsyncClient(timeout=30.0) as client:
             resp = await client.post(
                 proxy_url,
-                files={"file": (filename, file_bytes, IMAGE_PNG_MIME_TYPE)}
+                files={"file": (filename, img_data, IMAGE_PNG_MIME_TYPE)}
             )
             resp.raise_for_status()
             upload_data = resp.json()
@@ -72,11 +60,6 @@ async def _upload_screenshot_to_proxy(filepath: str) -> Optional[str]:
     except Exception as e:
         print(f"[Screenshot] Upload failed: {e}")
         return None
-
-
-def _save_image_data_sync(path: str, data: bytes) -> None:
-    with open(path, "wb") as f:
-        f.write(data)
 
 
 async def _wait_for_react_ready(mcp_manager: Any) -> None:
@@ -108,21 +91,23 @@ async def _focus_token_usage_chart(mcp_manager: Any) -> None:
             print(f"Fallback focus click failed: {e2}. Proceeding with PageDown anyway.")
 
 
-async def _save_screenshots(output_dir: str, screenshots: List[Any]) -> List[str]:
+async def _process_and_upload_screenshots(screenshots: List[Any]) -> List[str]:
     """
-    Decodes and saves screenshots to the specified output directory.
+    Decodes in-memory screenshots and uploads them to the AI proxy.
+    Returns a list of file_uris.
     """
     results: List[str] = []
     for i, res in enumerate(screenshots, 1):
         if res and not getattr(res, "isError", False) and hasattr(res, 'content') and res.content:
             try:
                 img_data = base64.b64decode(res.content[0].text)
-                path = f"{output_dir}/screenshot_{i}.png"
-                await asyncio.to_thread(_save_image_data_sync, path, img_data)
-                results.append(path)
-                print(f"Saved {path} ({len(img_data)} bytes)")
+                filename = f"screenshot_{i}.png"
+                file_uri = await _upload_screenshot_to_proxy(img_data, filename)
+                if file_uri:
+                    results.append(file_uri)
+                    print(f"Uploaded {filename} ({len(img_data)} bytes)")
             except Exception as b64e:
-                print(f"Failed to decode screenshot {i}: {b64e}")
+                print(f"Failed to decode and upload screenshot {i}: {b64e}")
         else:
             print(f"Screenshot {i} result was invalid: {res}")
     return results
@@ -140,8 +125,6 @@ async def run_task(inputs: CaptureTokenUsageSchema, credentials: Optional[Dict[s
     await mcp_manager.initialize()
 
     url = inputs.url
-    output_dir = inputs.output_dir
-    os.makedirs(output_dir, exist_ok=True)
 
     results: List[str] = []
 
@@ -178,21 +161,17 @@ async def run_task(inputs: CaptureTokenUsageSchema, credentials: Optional[Dict[s
         await asyncio.sleep(2)
         res3 = await mcp_manager.execute_tool("playwright", "browser_take_screenshot", {})
 
-        # Save results
-        results = await _save_screenshots(output_dir, [res1, res2, res3])
+        # Decode and Upload results directly to proxy
+        results = await _process_and_upload_screenshots([res1, res2, res3])
 
-        # Upload last successful screenshot for visual confirmation
-        file_uri = None
-        if results:
-            file_uri = await _upload_screenshot_to_proxy(results[-1])
+        # Return the last successful screenshot for visual confirmation
+        file_uri = results[-1] if results else None
         aria = await _capture_aria_snapshot_via_mcp()
-        return {"status": "success", "files": results, "aria_snapshot": aria, "file_uri": file_uri, "mime_type": IMAGE_PNG_MIME_TYPE}
+        return {"status": "success", "file_uris": results, "aria_snapshot": aria, "file_uri": file_uri, "mime_type": IMAGE_PNG_MIME_TYPE}
 
     except Exception as e:
         print(f"Token capture failed: {e}")
-        # Try to upload whatever we have
-        file_uri = None
-        if results:
-            file_uri = await _upload_screenshot_to_proxy(results[-1])
+        # Try to return whatever we have
+        file_uri = results[-1] if results else None
         aria = await _capture_aria_snapshot_via_mcp()
         return {"status": "error", "detail": str(e), "aria_snapshot": aria, "file_uri": file_uri, "mime_type": IMAGE_PNG_MIME_TYPE}

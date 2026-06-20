@@ -50,21 +50,119 @@ models:
     model_id: deepseek-v4-pro
     base_url: https://api.deepseek.com
     description: DeepSeek's latest frontier pro model with reasoning capabilities.
-    cost_input_per_1m: 0.22
+    cost_input_per_1m: 0.435
     cost_output_per_1m: 0.87
   deepseek-v4-flash:
     provider: deepseek
     model_id: deepseek-v4-flash
     base_url: https://api.deepseek.com
     description: DeepSeek's latest frontier flash model with reasoning capabilities.
-    cost_input_per_1m: 0.07
+    cost_input_per_1m: 0.14
     cost_output_per_1m: 0.28
-  gpt-4o:
-    provider: openai
-    model_id: gpt-4o
-    description: OpenAI's high-intelligence flagship model.
+  claude-4-8-opus:
+    provider: anthropic
+    model_id: claude-opus-4-8
+    description: Anthropic's highest performing model.
+    cost_input_per_1m: 5.0
+    cost_output_per_1m: 25.0
+  claude-4-6-sonnet:
+    provider: anthropic
+    model_id: claude-sonnet-4-6
+    description: Anthropic's most intelligent model.
+    cost_input_per_1m: 3.0
+    cost_output_per_1m: 15.0
+  claude-4-5-haiku:
+    provider: anthropic
+    model_id: claude-haiku-4-5-20251001
+    description: Anthropic's fast and cost-effective model.
+    cost_input_per_1m: 1.0
+    cost_output_per_1m: 5.0
+
+  qwen-plus-latest:
+    provider: alibaba
+    model_id: qwen-plus-latest
+    description: Alibaba Qwen Plus Latest model.
+    cost_input_per_1m: 0.4
+    cost_output_per_1m: 1.2
+  qwen3.7-plus:
+    provider: alibaba
+    model_id: qwen3.7-plus
+    description: Alibaba Qwen3.7 Plus model.
+    cost_input_per_1m: 0.4
+    cost_output_per_1m: 1.6
+  qwen3.7-max:
+    provider: alibaba
+    model_id: qwen3.7-max
+    description: Alibaba Qwen3.7 Max model.
     cost_input_per_1m: 2.5
-    cost_output_per_1m: 10.0
+    cost_output_per_1m: 7.5
+  qwen3.6-plus:
+    provider: alibaba
+    model_id: qwen3.6-plus
+    description: Alibaba Qwen3.6 Plus model.
+    cost_input_per_1m: 0.5
+    cost_output_per_1m: 3.0
+  qwen3.6-flash:
+    provider: alibaba
+    model_id: qwen3.6-flash
+    description: Alibaba Qwen3.6 Flash model.
+    cost_input_per_1m: 0.1875
+    cost_output_per_1m: 1.125
+  qwen3-max:
+    provider: alibaba
+    model_id: qwen3-max
+    description: Alibaba Qwen3 Max model.
+    cost_input_per_1m: 1.2
+    cost_output_per_1m: 6.0
+  qwen3-max-preview:
+    provider: alibaba
+    model_id: qwen3-max-preview
+    description: Alibaba Qwen3 Max Preview model.
+    cost_input_per_1m: 1.2
+    cost_output_per_1m: 6.0
+  glm-5.1:
+    provider: alibaba
+    model_id: glm-5.1
+    description: GLM-5.1 model from Zhipu, hosted on compatible API.
+    cost_input_per_1m: 1.4
+    cost_output_per_1m: 4.4
+
+  kimi-k2.7-code:
+    provider: kimi
+    model_id: kimi-k2.7-code
+    base_url: https://api.moonshot.ai/v1
+    description: Kimi K2.7 Code — strongest coding model with thinking always on. 256K context.
+    cost_input_per_1m: 0.95
+    cost_output_per_1m: 4.00
+  kimi-k2.7-code-highspeed:
+    provider: kimi
+    model_id: kimi-k2.7-code-highspeed
+    base_url: https://api.moonshot.ai/v1
+    description: Kimi K2.7 Code HighSpeed — fast variant, ~180 tok/s output. 256K context.
+    cost_input_per_1m: 1.90
+    cost_output_per_1m: 8.00
+  kimi-k2.6:
+    provider: kimi
+    model_id: kimi-k2.6
+    base_url: https://api.moonshot.ai/v1
+    description: Kimi K2.6 — most intelligent general-purpose model. Multimodal, 256K context.
+    cost_input_per_1m: 0.95
+    cost_output_per_1m: 4.00
+  kimi-k2.5:
+    provider: kimi
+    model_id: kimi-k2.5
+    base_url: https://api.moonshot.ai/v1
+    description: Kimi K2.5 — multimodal model supporting text, image, and video. 256K context.
+    cost_input_per_1m: 0.60
+    cost_output_per_1m: 3.00
+
+  # --- Ollama Local Models ---
+  gemma4-latest:
+    provider: ollama
+    model_id: gemma4:latest
+    description: Google Gemma 4 26B model running locally via Ollama (32K context window).
+    cost_input_per_1m: 0.0
+    cost_output_per_1m: 0.0
 roles:
   default: gemini-3.5-flash
   fast: gemini-flash-lite
@@ -78,3 +176,4 @@ roles:
   expert: gemini-powerful
   mermaid_syntax_corrector: gemini-powerful
   embedding: gemini-embedding
+  rule_grader: gemini-flash-lite

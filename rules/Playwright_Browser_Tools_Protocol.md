@@ -53,7 +53,6 @@ When bridging stateless API endpoints to a stateful UI monitoring system (like t
 - **The Rule:** Any interaction tool that fundamentally alters the DOM, URL, or rendered view—including `browser_navigate` and `browser_navigate_back`—MUST be strictly whitelisted to auto-trigger visual snapshots in the backend server routers. Never assume a navigation action is exempt from visual state synchronization.
 
 ## 7. Displaying Snapshots in Chat
-- **Storage Path:** Screenshots taken via `browser_take_screenshot` are saved to the backend's `/api/tmp/` directory.
-- **Rendering Protocol:** To render a snapshot in the chat, you MUST use the markdown syntax: `![filename](/api/tmp/filename)`.
-- **Ephemeral Nature:** Images are stored in a temporary directory. They are NOT persistent in the database. If the `tmp/` folder is cleared, the image link in the chat history will break (404).
-- **Tool Interception:** The backend automatically replaces the raw tool output with a JSON payload containing the `local_url` and a "Rendering Hint" message.
+- **In-Memory Streaming:** Screenshots taken via Playwright MUST NOT be saved to publicly writable temporary directories (like `/tmp/` or `/api/tmp/`) to avoid security hotspots. Instead, they must be captured directly into memory as byte streams (`await page.screenshot(full_page=True)`).
+- **Vision Ingestion:** To render or process a snapshot, upload the in-memory bytes to the GenAI Proxy via its `/v1/upload` endpoint. The proxy returns a `file_uri` that the vision model natively ingests.
+- **Ephemeral Nature:** The returned URI is managed by the proxy and should be passed to the LlamaIndex or chat response structure to display inline.

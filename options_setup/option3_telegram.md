@@ -60,3 +60,11 @@ Update your `.env` file at the root of your `isf-core` directory to include your
 3. Test communication by sending a message like:
    `Status` or `Run Morning Briefing`
 4. The bot will respond with your active factory stats, confirming that your secure mobile command center is active and listening!
+
+
+
+---
+
+## 💡 Pro-Tips
+
+* **Contextual Session Replies:** You can use Telegram's native "Reply" feature directly from your mobile device to reply to a specific message sent by the bot. ISF-Core will automatically route your reply as user chat input for that specific, ongoing chat session! This allows you to seamlessly provide feedback or continue complex workflows without ever needing to open the web dashboard.

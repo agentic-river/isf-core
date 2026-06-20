@@ -2,7 +2,7 @@ name: ai-proxy
 
 services:
   isf-ai-proxy:
-    image: donaldloo/ai-proxy:main
+    image: agenticriver/ai-proxy:main
     container_name: isf-ai-proxy
     ports:
       - "8066:8080"
