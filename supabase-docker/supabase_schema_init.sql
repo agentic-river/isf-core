@@ -45,7 +45,11 @@ CREATE TABLE IF NOT EXISTS messages (
     tool_calls JSONB DEFAULT '[]'::jsonb,
     token_in BIGINT DEFAULT 0,
     token_out BIGINT DEFAULT 0,
-    cost REAL DEFAULT 0.0
+    cost REAL DEFAULT 0.0,
+    cache_hit BIGINT DEFAULT 0,
+    cache_miss BIGINT DEFAULT 0,
+    model TEXT,
+    run_mode TEXT
 );
 
 CREATE TABLE IF NOT EXISTS token_usage (
@@ -54,6 +58,8 @@ CREATE TABLE IF NOT EXISTS token_usage (
     model TEXT,
     token_in BIGINT DEFAULT 0,
     token_out BIGINT DEFAULT 0,
+    cache_hit BIGINT DEFAULT 0,
+    cache_miss BIGINT DEFAULT 0,
     cost REAL DEFAULT 0.0,
     timestamp TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
@@ -64,6 +70,8 @@ CREATE TABLE IF NOT EXISTS token_usage_hourly (
     model TEXT NOT NULL,
     token_in BIGINT DEFAULT 0,
     token_out BIGINT DEFAULT 0,
+    cache_hit BIGINT DEFAULT 0,
+    cache_miss BIGINT DEFAULT 0,
     cost REAL DEFAULT 0.0,
     request_count INTEGER DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
@@ -203,274 +211,7 @@ END;
 $$;
 
 -- ==============================================================================
--- 7. AGENTIC BI SCHEMA
--- ==============================================================================
-CREATE TABLE IF NOT EXISTS public.bi_roles (
-    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name VARCHAR(100) UNIQUE NOT NULL,
-    description TEXT,
-    base_privilege VARCHAR(50) CHECK (base_privilege IN ('admin', 'creator', 'viewer')) DEFAULT 'viewer',
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS public.bi_user_roles (
-    user_id INT NOT NULL, 
-    role_id INT NOT NULL REFERENCES public.bi_roles(id) ON DELETE CASCADE,
-    PRIMARY KEY (user_id, role_id)
-);
-
-CREATE TABLE IF NOT EXISTS public.bi_dashboards (
-    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    description TEXT,
-    owner_id INT NOT NULL,
-    data_execution_mode VARCHAR(50) CHECK (data_execution_mode IN ('run_as_owner', 'run_as_viewer')) DEFAULT 'run_as_owner',
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS public.bi_reports (
-    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    owner_id INT NOT NULL,
-    cron_schedule VARCHAR(50),
-    data_execution_mode VARCHAR(50) CHECK (data_execution_mode IN ('run_as_owner', 'run_as_viewer')) DEFAULT 'run_as_owner',
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS public.bi_widgets (
-    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    dashboard_id INT NOT NULL REFERENCES public.bi_dashboards(id) ON DELETE CASCADE,
-    title VARCHAR(255) NOT NULL,
-    nl_query TEXT NOT NULL,
-    execution_plan JSONB,
-    chart_type VARCHAR(50) DEFAULT 'vega-lite',
-    layout_config JSONB DEFAULT '{}'::jsonb,
-    cache_ttl_seconds INTEGER DEFAULT 3600
-);
-
-CREATE TABLE IF NOT EXISTS public.bi_report_blocks (
-    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    report_id INT NOT NULL REFERENCES public.bi_reports(id) ON DELETE CASCADE,
-    block_type VARCHAR(50) NOT NULL,
-    nl_query TEXT NOT NULL,
-    execution_plan JSONB,
-    order_index INTEGER NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS public.bi_resource_grants (
-    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    resource_type VARCHAR(50) CHECK (resource_type IN ('dashboard', 'report')) NOT NULL,
-    resource_id INT NOT NULL,
-    grantee_user_id INT,
-    grantee_role_id INT REFERENCES public.bi_roles(id) ON DELETE CASCADE,
-    privilege VARCHAR(50) CHECK (privilege IN ('read', 'write', 'manage')) NOT NULL,
-    CONSTRAINT check_grantee CHECK (
-        (grantee_user_id IS NOT NULL AND grantee_role_id IS NULL) OR
-        (grantee_user_id IS NULL AND grantee_role_id IS NOT NULL)
-    )
-);
-
-CREATE TABLE IF NOT EXISTS public.bi_data_entitlements (
-    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    grantee_role_id INT REFERENCES public.bi_roles(id) ON DELETE CASCADE,
-    grantee_user_id INT,
-    dimension VARCHAR(100) NOT NULL,
-    operator VARCHAR(20) NOT NULL DEFAULT '=',
-    filter_values JSONB NOT NULL,
-    CONSTRAINT check_entitlement_grantee CHECK (
-        (grantee_user_id IS NOT NULL AND grantee_role_id IS NULL) OR
-        (grantee_user_id IS NULL AND grantee_role_id IS NOT NULL)
-    )
-);
-
-CREATE TABLE IF NOT EXISTS public.bi_column_restrictions (
-    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    grantee_role_id INT REFERENCES public.bi_roles(id) ON DELETE CASCADE,
-    grantee_user_id INT,
-    schema_name VARCHAR(100) DEFAULT 'public',
-    table_name VARCHAR(100) NOT NULL,
-    column_name VARCHAR(100) NOT NULL,
-    restriction_type VARCHAR(20) CHECK (restriction_type IN ('mask', 'deny')) DEFAULT 'deny',
-    CONSTRAINT check_column_restriction_grantee CHECK (
-        (grantee_user_id IS NOT NULL AND grantee_role_id IS NULL) OR
-        (grantee_user_id IS NULL AND grantee_role_id IS NOT NULL)
-    )
-);
-
-CREATE TABLE IF NOT EXISTS public.bi_user_preferences (
-    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    user_id INT NOT NULL,
-    resource_type VARCHAR(50) CHECK (resource_type IN ('dashboard', 'widget', 'report')) NOT NULL,
-    resource_id INT NOT NULL,
-    theme VARCHAR(50) DEFAULT 'system',
-    chart_type_override VARCHAR(50),
-    column_visibility JSONB DEFAULT '{}'::jsonb,
-    default_filters JSONB DEFAULT '{}'::jsonb,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (user_id, resource_type, resource_id)
-);
-
-CREATE TABLE IF NOT EXISTS public.bi_annotations (
-    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    user_id INT NOT NULL,
-    resource_type VARCHAR(50) CHECK (resource_type IN ('widget', 'report', 'dashboard')) NOT NULL,
-    resource_id INT NOT NULL,
-    content TEXT NOT NULL,
-    data_snapshot JSONB,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS public.bi_tags (
-    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name VARCHAR(100) UNIQUE NOT NULL,
-    color_code VARCHAR(7) DEFAULT '#808080'
-);
-
-CREATE TABLE IF NOT EXISTS public.bi_asset_tags (
-    tag_id INT NOT NULL REFERENCES public.bi_tags(id) ON DELETE CASCADE,
-    resource_type VARCHAR(50) CHECK (resource_type IN ('widget', 'report', 'dashboard', 'storyboard')) NOT NULL,
-    resource_id INT NOT NULL,
-    PRIMARY KEY (tag_id, resource_type, resource_id)
-);
-
-CREATE TABLE IF NOT EXISTS public.bi_storyboards (
-    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    description TEXT,
-    owner_id INT NOT NULL,
-    theme VARCHAR(50) DEFAULT 'default',
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS public.bi_storyboard_frames (
-    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    storyboard_id INT NOT NULL REFERENCES public.bi_storyboards(id) ON DELETE CASCADE,
-    resource_type VARCHAR(50) CHECK (resource_type IN ('widget', 'report_block', 'text_slide')) NOT NULL,
-    resource_id INT,
-    annotation_id INT REFERENCES public.bi_annotations(id) ON DELETE SET NULL,
-    order_index INTEGER NOT NULL,
-    layout_config JSONB DEFAULT '{}'::jsonb,
-    custom_title VARCHAR(255)
-);
-
-CREATE TABLE IF NOT EXISTS public.bi_cached_results (
-    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    reference_id INT NOT NULL,
-    executed_by_user_id INT,
-    data_payload JSONB,
-    ai_narrative TEXT,
-    computed_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    expires_at TIMESTAMP WITH TIME ZONE
-);
-
--- Safely create indices
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_bi_widgets_dashboard_id') THEN
-        CREATE INDEX idx_bi_widgets_dashboard_id ON public.bi_widgets(dashboard_id);
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_bi_report_blocks_report_id') THEN
-        CREATE INDEX idx_bi_report_blocks_report_id ON public.bi_report_blocks(report_id);
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_bi_resource_grants_target') THEN
-        CREATE INDEX idx_bi_resource_grants_target ON public.bi_resource_grants(resource_type, resource_id);
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_bi_data_entitlements_lookup') THEN
-        CREATE INDEX idx_bi_data_entitlements_lookup ON public.bi_data_entitlements(grantee_role_id, grantee_user_id);
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_bi_column_restrictions_lookup') THEN
-        CREATE INDEX idx_bi_column_restrictions_lookup ON public.bi_column_restrictions(grantee_role_id, grantee_user_id);
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_bi_user_prefs_lookup') THEN
-        CREATE INDEX idx_bi_user_prefs_lookup ON public.bi_user_preferences(user_id, resource_type, resource_id);
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_bi_annotations_lookup') THEN
-        CREATE INDEX idx_bi_annotations_lookup ON public.bi_annotations(resource_type, resource_id);
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_bi_asset_tags_lookup') THEN
-        CREATE INDEX idx_bi_asset_tags_lookup ON public.bi_asset_tags(resource_type, resource_id);
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_bi_storyboard_frames_sb_id') THEN
-        CREATE INDEX idx_bi_storyboard_frames_sb_id ON public.bi_storyboard_frames(storyboard_id);
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_bi_cached_results_lookup') THEN
-        CREATE INDEX idx_bi_cached_results_lookup ON public.bi_cached_results(reference_id, executed_by_user_id);
-    END IF;
-END $$;
-
-
--- ==============================================================================
--- 8. AI MANAGER / WISHES
--- ==============================================================================
-CREATE TABLE IF NOT EXISTS public.ai_manager_rules (
-    id bigint GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
-    rule_name character varying(255) NOT NULL,
-    description text,
-    system_prompt text NOT NULL,
-    is_active boolean DEFAULT true,
-    priority integer DEFAULT 10,
-    version integer NOT NULL DEFAULT 1,
-    created_by uuid REFERENCES auth.users(id),
-    updated_by uuid REFERENCES auth.users(id),
-    created_at timestamp with time zone NOT NULL DEFAULT now(),
-    updated_at timestamp with time zone NOT NULL DEFAULT now(),
-    is_deleted boolean NOT NULL DEFAULT false,
-    deleted_at timestamp with time zone
-);
-
-CREATE TABLE IF NOT EXISTS public.ai_manager_wishes (
-    id bigint GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
-    user_id uuid REFERENCES auth.users(id) ON DELETE SET NULL,
-    title character varying(255),
-    description text NOT NULL,
-    status character varying(50) DEFAULT 'Pending',
-    priority integer DEFAULT 5,
-    context_data jsonb DEFAULT '{}'::jsonb,
-    plan jsonb DEFAULT '{}'::jsonb,
-    images text[] DEFAULT '{}'::text[],
-    started_at timestamp with time zone,
-    completed_at timestamp with time zone,
-    version integer NOT NULL DEFAULT 1,
-    created_by uuid REFERENCES auth.users(id),
-    updated_by uuid REFERENCES auth.users(id),
-    created_at timestamp with time zone NOT NULL DEFAULT now(),
-    updated_at timestamp with time zone NOT NULL DEFAULT now(),
-    is_deleted boolean NOT NULL DEFAULT false,
-    deleted_at timestamp with time zone
-);
-
-CREATE TABLE IF NOT EXISTS public.ai_manager_tasks (
-    id bigint GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
-    wish_id bigint REFERENCES ai_manager_wishes(id) ON DELETE CASCADE,
-    step_number integer NOT NULL,
-    task_description text NOT NULL,
-    status character varying(50) DEFAULT 'Pending',
-    requires_approval boolean DEFAULT false,
-    tools_used jsonb DEFAULT '[]'::jsonb,
-    version integer NOT NULL DEFAULT 1,
-    created_by uuid REFERENCES auth.users(id),
-    updated_by uuid REFERENCES auth.users(id),
-    created_at timestamp with time zone NOT NULL DEFAULT now(),
-    updated_at timestamp with time zone NOT NULL DEFAULT now(),
-    is_deleted boolean NOT NULL DEFAULT false,
-    deleted_at timestamp with time zone
-);
-
-CREATE TABLE IF NOT EXISTS public.ai_manager_execution_logs (
-    id bigint GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
-    wish_id bigint REFERENCES ai_manager_wishes(id) ON DELETE CASCADE,
-    task_id bigint REFERENCES ai_manager_tasks(id) ON DELETE CASCADE,
-    log_level character varying(20) DEFAULT 'INFO',
-    message text NOT NULL,
-    screenshot_url text,
-    created_by uuid REFERENCES auth.users(id),
-    created_at timestamp with time zone NOT NULL DEFAULT now()
-);
-
--- ==============================================================================
--- 9. BROWSER CREDENTIALS VAULT
+-- 7. BROWSER CREDENTIALS VAULT
 -- ==============================================================================
 CREATE TABLE IF NOT EXISTS public.browser_credentials (
     id bigint GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
@@ -485,7 +226,7 @@ CREATE TABLE IF NOT EXISTS public.browser_credentials (
 );
 
 -- ==============================================================================
--- 10. RULES GOVERNANCE & TELEMETRY
+-- 9. RULES GOVERNANCE & TELEMETRY
 -- ==============================================================================
 CREATE TABLE IF NOT EXISTS public.rule_health (
     id bigint NOT NULL DEFAULT nextval('project_rules_health_id_seq'::regclass) PRIMARY KEY,
@@ -527,18 +268,8 @@ CREATE TABLE IF NOT EXISTS public.rule_deficit_recommendations (
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS public.tda_test_telemetry (
-    id integer NOT NULL DEFAULT nextval('tda_test_telemetry_id_seq'::regclass) PRIMARY KEY,
-    test_name text NOT NULL,
-    test_path text NOT NULL,
-    status text NOT NULL,
-    duration_ms integer,
-    error_message text,
-    created_at timestamp with time zone DEFAULT now()
-);
-
 -- ==============================================================================
--- 11. AUDIT LOGGING
+-- 10. AUDIT LOGGING
 -- ==============================================================================
 CREATE TABLE IF NOT EXISTS public.db_audit_logs (
     id bigint GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
@@ -552,7 +283,7 @@ CREATE TABLE IF NOT EXISTS public.db_audit_logs (
 );
 
 -- ==============================================================================
--- 12. ROW LEVEL SECURITY (RLS) & POLICIES
+-- 11. ROW LEVEL SECURITY (RLS) & POLICIES
 -- ==============================================================================
 -- Enable RLS
 ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
@@ -564,15 +295,10 @@ ALTER TABLE system_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE change_requests ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.agent_nodes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.semantic_definitions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.ai_manager_rules ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.ai_manager_wishes ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.ai_manager_tasks ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.ai_manager_execution_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.browser_credentials ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.rule_health ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.rule_evaluation_audit_log ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.rule_deficit_recommendations ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.tda_test_telemetry ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.db_audit_logs ENABLE ROW LEVEL SECURITY;
 
 -- Idempotent Policies
@@ -587,15 +313,10 @@ BEGIN
     DROP POLICY IF EXISTS "Enable all for service role on change_requests" ON change_requests;
     DROP POLICY IF EXISTS "Allow full access for service_role on agent_nodes" ON public.agent_nodes;
     DROP POLICY IF EXISTS "Allow full access for service_role on semantic_definitions" ON public.semantic_definitions;
-    DROP POLICY IF EXISTS "Allow full access for service_role on ai_manager_rules" ON public.ai_manager_rules;
-    DROP POLICY IF EXISTS "Allow full access for service_role on ai_manager_wishes" ON public.ai_manager_wishes;
-    DROP POLICY IF EXISTS "Allow full access for service_role on ai_manager_tasks" ON public.ai_manager_tasks;
-    DROP POLICY IF EXISTS "Allow full access for service_role on ai_manager_execution_logs" ON public.ai_manager_execution_logs;
     DROP POLICY IF EXISTS "Allow full access for service_role on browser_credentials" ON public.browser_credentials;
     DROP POLICY IF EXISTS "Allow full access for service_role on rule_health" ON public.rule_health;
     DROP POLICY IF EXISTS "Allow full access for service_role on rule_evaluation_audit_log" ON public.rule_evaluation_audit_log;
     DROP POLICY IF EXISTS "Allow full access for service_role on rule_deficit_recommendations" ON public.rule_deficit_recommendations;
-    DROP POLICY IF EXISTS "Allow full access for service_role on tda_test_telemetry" ON public.tda_test_telemetry;
     DROP POLICY IF EXISTS "Allow full access for service_role on db_audit_logs" ON public.db_audit_logs;
 END $$;
 
@@ -608,19 +329,14 @@ CREATE POLICY "Enable all for service role on system_logs" ON system_logs FOR AL
 CREATE POLICY "Enable all for service role on change_requests" ON change_requests FOR ALL USING (true);
 CREATE POLICY "Allow full access for service_role on agent_nodes" ON public.agent_nodes FOR ALL TO service_role USING (true) WITH CHECK (true);
 CREATE POLICY "Allow full access for service_role on semantic_definitions" ON public.semantic_definitions FOR ALL TO service_role USING (true) WITH CHECK (true);
-CREATE POLICY "Allow full access for service_role on ai_manager_rules" ON public.ai_manager_rules FOR ALL TO service_role USING (true) WITH CHECK (true);
-CREATE POLICY "Allow full access for service_role on ai_manager_wishes" ON public.ai_manager_wishes FOR ALL TO service_role USING (true) WITH CHECK (true);
-CREATE POLICY "Allow full access for service_role on ai_manager_tasks" ON public.ai_manager_tasks FOR ALL TO service_role USING (true) WITH CHECK (true);
-CREATE POLICY "Allow full access for service_role on ai_manager_execution_logs" ON public.ai_manager_execution_logs FOR ALL TO service_role USING (true) WITH CHECK (true);
 CREATE POLICY "Allow full access for service_role on browser_credentials" ON public.browser_credentials FOR ALL TO service_role USING (true) WITH CHECK (true);
 CREATE POLICY "Allow full access for service_role on rule_health" ON public.rule_health FOR ALL TO service_role USING (true) WITH CHECK (true);
 CREATE POLICY "Allow full access for service_role on rule_evaluation_audit_log" ON public.rule_evaluation_audit_log FOR ALL TO service_role USING (true) WITH CHECK (true);
 CREATE POLICY "Allow full access for service_role on rule_deficit_recommendations" ON public.rule_deficit_recommendations FOR ALL TO service_role USING (true) WITH CHECK (true);
-CREATE POLICY "Allow full access for service_role on tda_test_telemetry" ON public.tda_test_telemetry FOR ALL TO service_role USING (true) WITH CHECK (true);
 CREATE POLICY "Allow full access for service_role on db_audit_logs" ON public.db_audit_logs FOR ALL TO service_role USING (true) WITH CHECK (true);
 
 -- ==============================================================================
--- 13. GRANTS & PERMISSIONS
+-- 12. GRANTS & PERMISSIONS
 -- ==============================================================================
 GRANT USAGE ON SCHEMA app_dev TO authenticated, service_role;
 GRANT USAGE ON SCHEMA app_stage TO authenticated, service_role;
@@ -631,7 +347,7 @@ GRANT ALL ON ALL TABLES IN SCHEMA public TO anon, authenticated, service_role;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role;
 
 -- ==============================================================================
--- 14. CRON SCHEDULING SYSTEM
+-- 13. CRON SCHEDULING SYSTEM
 -- ==============================================================================
 CREATE TABLE IF NOT EXISTS public.cron_scheduled_jobs (
     id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,

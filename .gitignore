@@ -21,7 +21,8 @@ env/
 # ==========================
 # 3. RUNTIME DATA (user-generated, not tracked)
 # ==========================
-data/
+data/*
+!data/.gitkeep
 *.log
 *.db
 token_cache.bin
@@ -39,5 +40,7 @@ Thumbs.db
 # ==========================
 # 5. DOCKER RUNTIME
 # ==========================
-volumes/
-backups/
+volumes/*
+!volumes/.gitkeep
+backups/*
+!backups/.gitkeep

@@ -1,18 +1,37 @@
 # 🤖 ISF-Core — Infinite Software Factory
 
 <p align="center">
-  <em>The Free, Self-Hosted, Web-Based AI App Factory. Coordinate a concurrent team of specialized AI workers in a unified "Inbox-style" workspace. Built for maximum token efficiency, self-learning, and 100% data privacy.</em>
+  <strong>The Free, Self-Hosted AI App Factory.</strong><br>
+  🚀 Coordinate a concurrent team of specialized AI workers.<br>
+  💬 Unified "Inbox-style" workspace.<br>
+  🔒 Built for maximum token efficiency and 100% data privacy.
 </p>
 
 <p align="center">
-  <a href="https://github.com/agentic-river/isf-core/stargazers"><img src="https://img.shields.io/github/stars/agentic-river/isf-core?style=for-the-badge&color=yellow" alt="Stars" /></a>
+  <a href="https://github.com/agentic-river/isf-core/stargazers"><img src="https://img.shields.io/badge/Platform-Web_GUI-blue?style=for-the-badge" alt="Platform" /></a>
   <a href="https://github.com/sponsors/agentic-river"><img src="https://img.shields.io/badge/Sponsor-%E2%9D%A4-pink?style=for-the-badge&logo=github" alt="Sponsor" /></a>
   <a href="https://github.com/agentic-river/isf-core/issues"><img src="https://img.shields.io/badge/Feedback-Welcome-brightgreen?style=for-the-badge" alt="Feedback" /></a>
+</p>
+
+<!-- <p align="center">
+  <em><img src="https://via.placeholder.com/800x400.png?text=Outlook-style+Inbox+Hero+Image+Placeholder" alt="ISF-Core Web Workspace" /></em>
+</p> -->
+
+<p align="center">
+  <a href="#-quick-start"><strong>🚀 Jump to Quick Start</strong></a> | 
+  <a href="#-cloned-workspace-architecture"><strong>📖 Read the Docs</strong></a>
 </p>
 
 Welcome to your standalone deployment of **ISF-Core**, the engine behind the **Infinite Software Factory (ISF)**. ISF-Core is a free, self-hosted, local-first AI development platform that transforms you from a _writer of code_ into an _Orchestrator of AI Departments_.
 
 Unlike traditional terminal-bound CLI tools or editor-integrated extensions that force you into a single-threaded bottleneck, ISF-Core lets you act as the **Engineering Manager**, orchestrating specialized, concurrent AI workers via an Outlook-style, multi-threaded Web UI dashboard.
+
+<p align="center">
+  <img src="pics/fullscreen-light_theme.png" alt="ISF-Core Web Workspace (Light Theme)" width="49%" />
+  <img src="pics/fullscreen-dark_theme.png" alt="ISF-Core Web Workspace (Dark Theme)" width="49%" />
+  <br/>
+  <em>Seamlessly switch between Light and Dark themes to suit your workspace preference.</em>
+</p>
 
 ---
 
@@ -20,14 +39,14 @@ Unlike traditional terminal-bound CLI tools or editor-integrated extensions that
 
 To understand why ISF-Core represents a major evolution in AI-driven development, let's examine how it stacks up against standard market tools:
 
-| Feature / Metric         | 📟 Terminal CLI Agents                                                 | 🔧 API-Only Foundations                                      | 💻 Editor-Bound Chat Extensions                                  | 🌐 ISF-Core                                                                   |
-| :----------------------- | :--------------------------------------------------------------------- | :----------------------------------------------------------- | :--------------------------------------------------------------- | :---------------------------------------------------------------------------- |
-| **Interface Mode**       | **Terminal CLI Only**                                                  | **API-Only (No UI)**                                         | **IDE-Bound GUI**                                                | **Web-Based Workspace UI**                                                    |
-| **User Experience (UX)** | Raw terminal log streams; hard to track parallel files.                | None. Requires building a custom frontend or script wrapper. | Inline edits & sidebars. Hard to run multiple independent tasks. | **Inbox Dashboard (Outlook-style)** with thread-switching & notifications.    |
-| **Concurrency**          | **Sequential.** Stalls your shell while executing single loops.        | Multi-thread capable but requires custom coordination.       | **Sequential.** One inline edit or chat prompt runs at a time.   | **Concurrent.** Spin up multiple specialized agents in parallel.              |
-| **Token Efficiency**     | **Low.** Frequently re-reads entire file structures and terminal logs. | **Low.** Zero built-in caching; client must manage context.  | **Moderate.** Employs semantic RAG, but context grows rapidly.   | **Ultra-High.** Local AST maps ensure only micro-snippets are sent.           |
-| **Self-Healing Loop**    | Requires user copy-pasting shell commands or manual runs.              | Manual setup.                                                | User must trigger test terminal or run manually.                 | **Fully Autonomous.** Core executes tests & repairs errors behind the scenes. |
-| **Hosting & Privacy**    | Local, but depends on hosted cloud engine constraints.                 | Proprietary cloud API.                                       | Hosted cloud wrapper; potential privacy concerns.                | **100% Private, Self-Hosted Docker.** Your key, your code.                    |
+| Feature / Metric         | 📟 Terminal CLI Agents                                                             | 💻 Editor-Bound Chat                                                 | 🌐 ISF-Core (Multi-Agent Factory)                                               |
+| :----------------------- | :--------------------------------------------------------------------------------- | :------------------------------------------------------------------- | :------------------------------------------------------------------------------ |
+| **Interface Mode**       | 🟡 **Terminal CLI** (Highly efficient for power users, but terminal-bound)         | 🟡 **IDE-Bound GUI** (Excellent inline code editing)                 | 🟢 **Web-Based Workspace UI** (Outlook-style Dashboard)                         |
+| **User Experience (UX)** | 🟡 Blazing fast, but tracking massive multi-file architectural changes is complex. | 🟢 Familiar IDE environment with seamless contextual sidebars.       | 🟢 **Inbox Dashboard** with visual thread-switching, charts & task tracking.    |
+| **Concurrency**          | 🟡 **Sequential.** Single active process; you wait for the agent to finish tasks.  | 🟡 **Sequential.** Focused on one active chat/inline task at a time. | 🟢 **Concurrent.** Spin up multiple independent AI threads simultaneously.      |
+| **Token Efficiency**     | 🟢 **Excellent.** Uses advanced repo mapping to minimize context payload.          | 🟡 **Good.** But context windows can bloat with many open file tabs. | 🟢 **Ultra-High.** Local AST maps and semantic federated databases cache logic. |
+| **Self-Healing Loop**    | 🟢 **Very Strong.** Can run shell tests and self-correct syntax autonomously.      | 🟡 **Moderate.** Requires user to manually click "fix" or run tests. | 🟢 **Fully Autonomous.** Executes tests/linters inside isolated Docker engines. |
+| **Hosting & Privacy**    | 🟡 Code is local, but telemetry/API privacy depends strictly on the vendor.        | 🟡 Cloud-synced telemetry and proprietary backend dependencies.      | 🟢 **100% Private, Self-Hosted Docker.** Your keys, your code. Air-gap capable. |
 
 ---
 
@@ -59,63 +78,65 @@ To understand why ISF-Core represents a major evolution in AI-driven development
 
 ## 🧠 Core Differentiators & Breakthrough Capabilities
 
-### 1. Radical Local Token Efficiency (No Context Bloat)
+### 1. 🌐 Local-First Web Dashboard + Any IDE
 
-Most agentic systems suffer from "context bloat," blindly dumping massive file structures into expensive LLM prompts. ISF-Core proves its token efficiency through measurable, real-time observability and architectural routing:
+Unlike IDE-bound extensions or sequential terminal CLIs, ISF-Core is a **full-featured Web Workspace** (`http://localhost:3006`) seamlessly mapped to your local IDE.
 
-- **Token Usage Dashboard:** A dedicated `/usage` analytics page visually graphs your daily input/output token consumption, exact micro-costs, and provider breakdowns so you are never surprised by API bills.
-- **Message-Level Transparency:** Every chat message displays a localized usage bar showing the exact model used, input/output token counts, fractional dollar cost, and even DeepSeek KV Cache Hit/Miss metrics.
-- **Role-Based Model Routing (`models.yaml`):** Not every task needs an expensive reasoning model. We define explicit agent roles in `models.yaml` (e.g., `coder`, `planner`, `sonar_fixer`, `rule_grader`) allowing high-frequency cron jobs and background daemon tasks to automatically route to ultra-cheap, fast models (like `gemini-flash-lite`), while reserving frontier models (like `deepseek-v4-pro`) only for complex architectural tasks.
+- 🔄 <span style="color:#2b6cb0;">**Zero-Sync Filesystem:**</span> Edits sync instantly with VS Code/IntelliJ. **No copy-paste.**
+- 📂 <span style="color:#2b6cb0;">**Built-in Code Editor:**</span> Git-aware file tree. Edit and save directly in the browser.
+- 💬 <span style="color:#2b6cb0;">**Outlook-Style Inbox:**</span> Run concurrent AI threads independently.
+- 📊 <span style="color:#2b6cb0;">**Visual Thinking Process:**</span> Live, color-coded task tracing (reasoning 🟣, progress 🟡, success 🟢).
+- 👁️ <span style="color:#2b6cb0;">**Dry Run Mode:**</span> `Shift + Tab` for code review before disk write.
+- ⚡ <span style="color:#2b6cb0;">**Runtime Model Switching:**</span> Swap LLMs instantly while chatting.
 
-### 2. Local-First Web Dashboard + Any IDE
+> 💡 **The result:** Your IDE and AI agent share one filesystem. **Plan in Web UI ➡️ Review in VS Code. Full data sovereignty.**
+>
+> 👉 **[View the Full Platform Web UI Showcase (21 Screenshots)](options_setup/webui_workspace_overview.md)**
 
-Unlike IDE-bound extensions that trap you inside a single editor pane or terminal CLI tools that freeze your shell with sequential loops, ISF-Core provides a **full-featured Web-Based Workspace dashboard** at `http://localhost:3006` that collaborates with your development IDE through a shared filesystem:
+### 2. 📉 Radical Token Efficiency (Zero Context Bloat)
 
-- **Zero-Sync Filesystem Mirroring:** The entire project directory, including `.git`, is mounted as a Docker volume. When the AI writes code, it writes directly to your actual workspace files — VS Code, IntelliJ, or any editor instantly sees every change. When you edit a file manually, the AI sees it immediately. No copy-paste, no cloud upload, no deployment step.
-- **Interactive File Explorer & Code Editor:** A resizable sidebar with a git-aware file tree (modified files highlighted), file search, and a built-in syntax-highlighted editor supporting 30+ languages — edit files directly in the browser and save to disk with `Ctrl/Cmd + S`.
-- **Outlook-Style Multi-Threaded Inbox:** Switch between concurrent AI agent chat threads like email — each thread operates independently, with status tagging, archive/trash, deep search, and notification badges when background tasks complete.
-- **Visual Thinking Process Dashboard:** A full-screen expandable panel traces every tool call with color-coded icons (reasoning 🟣, progress 🟡, steering 🔵, success 🟢, error 🔴), a progress bar, and a duration timer — giving you complete transparency into the agent's decision-making.
-- **Dry Run Mode:** Toggle with `Shift + Tab` to instruct the AI to plan and propose changes without writing to disk — perfect for code review, architectural discussion, or when you prefer to apply changes manually in your IDE.
-- **Runtime Model Switching:** Swap LLM providers and models on the fly from a dropdown menu while chatting — no restart required, no config file edits.
+Eliminates massive, blind file dumps. ISF-Core uses Git-aware file discovery and precise line-range slicing to send only what's needed.
 
-> 💡 **The result:** Your IDE and your AI tool (ISF-Core) are not competitors — they're collaborators sharing one filesystem. Work on Plan -> Execute in the Web UI, review git changes in VS Code. No cloud upload, no sync step, no copy-paste — full data sovereignty with zero friction between your IDE and your ai agents.
+- 💸 <span style="color:#38a169;">**Never Get Surprised by Bills:**</span> `/usage` dashboard visually graphs exact micro-costs.
+- 🔍 <span style="color:#38a169;">**Per-Prompt Observability:**</span> Usage bars on every message show hit/miss metrics and token counts.
+- 🚦 <span style="color:#38a169;">**Smart Model Routing:**</span> Define roles in `models.yaml`. Route heavy architectural tasks to expensive models and basic cron tasks to cheap/fast models automatically.
 
-### 3. Choice of Leading-Edge LLM Powerhouses
+### 3. 🚀 Choice of Leading-Edge LLM Powerhouses
 
-ISF-Core provides native out-of-the-box support for **7 LLM providers** spanning 39+ registered models, allowing you to swap backends dynamically depending on your active task:
+Native support for **8 LLM providers (40+ models)**. Swap dynamically per task!
 
-- **Gemini LLM API:** Unlock the massive **2-million token context window** and high-speed execution. Gemini is the ultimate choice for deep visual inspections of browser snapshots (via Playwright), ingesting massive codebase directory architectures at once, and generating embeddings.
-- **Anthropic Claude API:** Access **Claude 4 Opus, Sonnet, and Haiku** — Anthropic's frontier reasoning models with exceptional coding, analysis, and creative capabilities.
-- **DeepSeek V4 LLM API:** Leverage state-of-the-art coding reasoning and architectural planning at a fraction of the cost. DeepSeek V4 Pro and Flash are highly optimized for precise logical deduction, self-healing code edits, and structured outputs.
-- **OpenAI API:** Standard connectivity to GPT-4 and other OpenAI models for general-purpose reasoning and code generation.
-- **Alibaba Qwen API:** Tap into the **Qwen3.7 Max/Plus/Flash** family and **GLM-5.1** — high-performance models with competitive benchmarks for coding, multilingual tasks, and long-context understanding.
-- **Kimi (Moonshot) API:** Unlock **Kimi K2.7 Code** with a **256K context window** and always-on chain-of-thought reasoning, purpose-built for complex code generation and debugging.
-- **Ollama (Local):** Run **Gemma 4 26B** entirely on your own hardware via Ollama — zero API costs, 32K context, and full data sovereignty for air-gapped or sensitive environments.
+- 🔵 **Google Gemini:** 2M context, deep visual inspection (Playwright snapshots).
+- 🟣 **Anthropic Claude:** Top-tier reasoning (Opus/Sonnet/Haiku).
+- ⚪ **DeepSeek V4:** Pro & Flash for precise logical deduction at low cost.
+- 🟢 **OpenAI:** GPT-4 models.
+- 🟠 **Alibaba Qwen:** High-performance Qwen3.7/GLM-5.1.
+- 🟡 **Kimi (Moonshot):** 256K context chain-of-thought code reasoning.
+- 🔷 **Z.AI GLM-5.2:** 1M context, 128K max output, thinking mode, strong coding (81.0 Terminal-Bench).
+- 🔴 **Ollama (Local):** Air-gapped, zero-cost local execution (e.g., Gemma 4 26B).
 
-### 4. Self-Reflection & Auto-Optimizing Rules
+### 4. 🧠 Self-Reflection & Auto-Optimizing Rules
 
-Unlike other engines that repeat the same errors in an infinite loop, ISF-Core features **Meta-Learning Self-Reflexivity**:
+**Meta-Learning Self-Reflexivity:** ISF-Core doesn't repeat mistakes.
 
-- When a worker encounters a build error, a failing unit test, or an architectural mistake, the orchestrator triggers an automated **Post-Mortem Analysis**.
-- The system analyzes why the mistake happened, designs a corrective workflow, and **writes a new markdown rule directly into your local `rules/` directory** (e.g., `rules/API_Naming_Conventions.md`).
-- In subsequent tasks, the AI reads these rules dynamically, ensuring the factory permanently adapts to your specific codebase constraints and never repeats a mistake.
+- 🛑 **Post-Mortem Analysis:** Diagnoses root causes of test or build errors.
+- 📝 **Rule Generation:** Automatically writes markdown rules into `rules/`.
+- 🔄 **Continuous Adaptation:** Permanently adapts to your codebase constraints.
 
-### 5. Living, Continuous Documentation Updates
+### 5. 📚 Living, Continuous Documentation
 
-Legacy codebase documentation is notoriously prone to decay. ISF-Core treats documentation as a first-class citizen:
+Treats documentation as a first-class citizen to combat decay.
 
-- As your coder agents modify databases, refactor modules, or create schemas, a specialized **Technical Writer Agent** immediately updates relevant markdown files inside your `docs/` directory.
-- This ensures that both you (the human director) and future AI worker threads always have an accurate, high-fidelity map of the active system layout.
+- ✍️ **Automated Updates:** A specialized _Technical Writer Agent_ actively updates `docs/`.
+- 🗺️ **High-Fidelity Context:** Humans and AI agents always share an accurate, real-time map.
 
-### 6. Continuous Maintenance Department (Autonomous Cron Workflows)
+### 6. ⚙️ Continuous Maintenance Department (Cron)
 
-In a high-performing software engineering department, development doesn't stop when humans log off. Maintenance and code health are continuous. ISF-Core embeds this professional engineering culture directly into its self-hosted architecture via its integrated **Cron Daemon**:
+Development doesn't stop when you log off.
 
-- **Routine Code Cleanups:** Schedule background jobs at any interval (e.g., nightly, hourly) that act as your persistent code hygiene department.
-- **Autonomous Test Fixing:** A dedicated background agent runs your test suites, intercepts test failures, diagnoses the root causes, and patches broken test scripts or application regressions autonomously.
-- **Sonar Quality Code Correction:** The scheduled workflow runs static analysis scans, fetches quality issues, and refactors complex functions, unused variables, and code smells without requiring manual intervention.
-- **Security Hotspot Defusing:** Routine audits scan your codebase for exposed credentials, loose API schemas, and insecure practices, applying secure, compiled refactoring blocks.
-- **Test Coverage Maximization:** Background tasks analyze test gaps using local coverage reports, writing brand-new unit or integration test cases targeting untested lines to raise coverage scores automatically over time.
+- 🧹 **Routine Cleanups:** Schedule background code hygiene.
+- 🛠️ **Autonomous Test Fixing:** Agents detect test failures and patch broken logic.
+- 🔍 **Quality & Security Auto-Pilot:** Fixes Sonar code smells and defuses security hotspots.
+- 📈 **Coverage Maximization:** Analyzes test gaps and generates new unit tests.
 
 ---
 
@@ -125,36 +146,27 @@ In a high-performing software engineering department, development doesn't stop w
 
 The flowchart below illustrates how the **Web Dashboard** interacts with the **ISF Core - Orchestration Engine** and local files, keeping your credentials, data, and code private.
 
-```
-                  ┌─────────────────────────────────────────┐
-                  │        WEB-BASED BROWSER WORKSPACE      │
-                  │   - Outlook-Style Inbox & Threads       │
-                  │   - Interactive Process Cards & Charts  │
-                  └────────────────────┬────────────────────┘
-                                       │ (WebSockets & APIs)
-                                       ▼
-                  ┌─────────────────────────────────────────┐
-                  │      DOCKER CONTAINER isf/factory       │
-                  │                                         │
-                  │   ┌─────────────────────────────────┐   │
-                  │   │        Pre-Compiled Core        │   │
-                  │   │      (Orchestration Engine)     │   │
-                  │   └────────────────┬────────────────┘   │
-                  │                    │                    │
-                  │                    ▼                    │
-                  │   ┌─────────────────────────────────┐   │
-                  │   │   Concurrent Micro-Workers      │   │
-                  │   │  - Architect   - Code Learner   │   │
-                  │   │  - Senior Coder - QA Specialist │   │
-                  │   └────────────────┬────────────────┘   │
-                  └────────────────────┼────────────────────┘
-                                       │ (Local volume mapping)
-                                       ▼
-                  ┌─────────────────────────────────────────┐
-                  │         LOCAL USER WORKSPACE            │
-                  │   - browser-agents/       - rules/      │
-                  │   - data/ (SQLite)        - docs/       │
-                  └─────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    Web["WEB-BASED BROWSER<br>WORKSPACE<br>- Outlook-Style Inbox & Threads<br>- Interactive Process Cards<br>- Charts & Workflow Diagram"]
+
+    subgraph Docker ["DOCKER CONTAINER isf/factory"]
+        direction TB
+        Core["Pre-Compiled Core<br>(Orchestration Engine)"]
+        Workers["Concurrent Micro-Workers<br>- Architect<br>- Code Learner<br>- Senior Coder<br>- QA Specialist"]
+        Core --> Workers
+    end
+
+    Local["LOCAL USER WORKSPACE<br>- browser-agents/   - rules/<br>- data/ (SQLite)   - docs/"]
+
+    Web -->|WebSockets & APIs| Docker
+    Docker -->|Local volume mapping| Local
+
+    style Web fill:#2d3748,stroke:#4a5568,color:#fff
+    style Docker fill:#1a202c,stroke:#2b6cb0,stroke-width:2px,color:#fff
+    style Core fill:#2b6cb0,stroke:#63b3ed,color:#fff
+    style Workers fill:#2b6cb0,stroke:#63b3ed,color:#fff
+    style Local fill:#2d3748,stroke:#4a5568,color:#fff
 ```
 
 ### Self-Healing & Verification Loop
@@ -194,42 +206,70 @@ Before getting started, ensure your system meets the following requirements:
 3. **Git:** Installed
 4. **Python:** 3.12 (recommended)
 
-## 🚀 Quick Start
+## 🚀 How to Run the Software Factory
 
-Ensure you have [Docker](https://docs.docker.com/get-docker/) installed, then launch your factory in seconds:
+The Infinite Software Factory operates in a two-tier repository architecture:
+
+1. **`isf-core` (This Repository):** The main project repository containing comprehensive project documentation, scale-up instructions, UI screenshot galleries, and advanced configuration guides.
+2. **`isf-new-project` (Starter Template):** The actual deployment template. Use this turn-key sandbox to clone, run, and manage your isolated `isf-core` AI software factory projects.
+
+---
+
+### Step 1: Clone the Starter Template
+
+The fastest way to boot ISF-Core and start generating software is to use our official isolated starter project template.
+
+👉 **[Click Here to Use the ISF-New-Project Template](https://github.com/agentic-river/isf-new-project/generate)**
+
+Alternatively, clone it directly from the terminal:
 
 ```bash
-# Clone the orchestration repository (scaffolding & workspace only) to a new project folder:
-git clone https://github.com/agentic-river/isf-core.git my-new-project
-cd my-new-project
+git clone https://github.com/agentic-river/isf-new-project.git my-ai-project
+cd my-ai-project
+```
 
-# Remove the existing Git history:
-rm -rf .git
+### Step 2: Configure API Keys
 
-# Initialize a new Git repository:
-git init
-git add .
-git commit -m "Initial commit: Scaffolding from ISF-Core"
+Set up your AI Proxy credentials to route agent requests securely to your chosen LLM providers:
 
-# Set up your AI Proxy environment credentials
+```bash
 cp .env.ai_proxy.example .env.ai_proxy
 
-# Open .env.ai_proxy and add your Gemini, DeepSeek, or other API keys
-nano .env.ai_proxy
-# or use VSCode
+# Open and add your API keys (e.g., GOOGLE_API_KEY, DEEPSEEK_API_KEY)
 code .env.ai_proxy
+```
 
-# Run the automated setup script to configure your environment, database, and settings
+### Step 3: Run Setup & Launch
+
+Execute the setup script to initialize your SQLite database, volumes, and base configurations:
+
+```bash
+# Initialize SQLite database and local volume directories
 python setup.py
 
-# 🚀 Start ISF-Core + AI-Proxy Docker containers together (recommended)
+# Launch the factory engine and gateway containers
 python start_isf_core.py
 ```
 
-Access your interactive workspace dashboard at `http://localhost:3006`!
+🎉 Open **`http://localhost:3006`** in your browser! Your local software department is live.
 
-> 🛑 **To shut down later:** Run `python shutdown_isf_core.py`
-> 🔧 **To start the AI-Proxy standalone:** Run `docker compose -f ai-proxy.yml up -d`
+---
+
+## 🚀 Quick Start
+
+If you want to build a clean, standalone custom application and don't need the full core workspace configs, use our official lightweight starter-kit:
+
+👉 **[Click Here to Generate a New Project Template](https://github.com/agentic-river/isf-new-project/generate)**
+
+Alternatively, clone the template directly:
+
+```bash
+git clone https://github.com/agentic-river/isf-new-project.git my-ai-project
+cd my-ai-project
+python start_isf_core.py
+```
+
+---
 
 ### 🔐 Why AI-Proxy Is Separate from ISF-Core
 
@@ -251,10 +291,11 @@ You'll notice this deployment includes **two** containers:
 
 ---
 
-## 🗺️ Tour Guide
+## 🗺️ Tour Guide & UI Showcase
 
 Once you have successfully started ISF-Core, we highly recommend checking out our UI Tour Guide to familiarize yourself with the dashboard and verify your AI connections.
 
+👉 **[View the Full Platform Web UI Showcase (21 Screenshots)](options_setup/webui_workspace_overview.md)**
 👉 **[View the ISF-Core UI Tour Guide](options_setup/TourGuide.md)**
 
 ---
@@ -267,17 +308,17 @@ Once the repository is cloned, your local workspace mapping matches the root fol
 | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `docs/`                | Living system documentation. **The AI automatically keeps these updated** so your project context never drifts.                                                                           |
 | `rules/`               | Strict operational guidelines. **The AI writes post-mortem rules here** to optimize its future development workflow!                                                                      |
-| `backend/tasks/`       | Python scripts for scheduled background maintenance jobs (cron routines that autonomously fix failing tests, resolve Sonar issues, defuse security hotspots, and expand test coverage).   |
+| `cron_tasks/`          | Python scripts for scheduled background maintenance jobs (cron routines that autonomously fix failing tests, resolve Sonar issues, defuse security hotspots, and expand test coverage).   |
 | `browser-agents/`      | Browser automation scripts for interacting with external web portals.                                                                                                                     |
 | `supabase-docker/`     | Self-hosted Supabase/PostgreSQL Docker configs — compose stack (Kong, Auth, Postgres, Studio), canonical schema init SQL, and migration scripts. Used by Option 1 to scale beyond SQLite. |
 | `data/`                | Your local SQLite database (`chat_history.db`) and persistent AI data — stored securely on your host machine.                                                                             |
 | `system_prompt.md`     | The AI's core behavioral constitution — defines tool-use protocols, mandatory self-review, anti-hallucination rules, visualization standards, and workspace safety constraints.           |
-| `models.yaml`          | LLM model registry (39+ models, 7 providers) with per-token costs and **role-based routing** — cheap models for cron/background tasks, frontier models for complex architecture.          |
+| `models.yaml`          | LLM model registry (40+ models, 8 providers) with per-token costs and **role-based routing** — cheap models for cron/background tasks, frontier models for complex architecture.          |
 | `setup.py`             | Automated first-run setup: creates `.env`, `.env.ai_proxy.example`, initializes SQLite schema, and writes default skip config. **Run once before starting.**                              |
 | `start_isf_core.py`    | One-command launcher: detects OS, picks the correct compose file, pulls images, and starts `isf-core` + `ai-proxy` containers. Prints dashboard URL on success.                           |
 | `shutdown_isf_core.py` | One-command graceful shutdown: stops & removes all containers while preserving your `data/` directory.                                                                                    |
 | `.env`                 | Infrastructure configuration (Tavily API key, Telegram, Git settings).                                                                                                                    |
-| `.env.ai_proxy`        | **LLM provider keys only** (Gemini, DeepSeek, OpenAI) — isolated from the factory engine.                                                                                                 |
+| `.env.ai_proxy`        | **LLM provider keys only** (Gemini, DeepSeek, OpenAI, Anthropic, Z.AI etc) — isolated from the factory engine.                                                                            |
 | `compose.yml`          | Standard Docker Compose orchestration file to spin up the container network on Linux/Windows hosts.                                                                                       |
 | `compose.mac.yml`      | Tailored Docker Compose orchestration file optimized for MacOS volume and timezone mount paths.                                                                                           |
 
@@ -324,79 +365,95 @@ Mentions bring files directly into context:
 
 ## ⬆️ Scaling & Upgrading
 
-ISF-Core starts with SQLite for zero-friction setup. As your usage grows, you can supercharge your factory engine by activating advanced AI tools and scaling parameters:
+ISF-Core starts with a zero-friction SQLite setup. As your usage grows, supercharge your factory by activating these modular enterprise features:
 
-### Option 1: Migrate to Supabase (PostgreSQL)
+### 🐘 Option 1: Migrate to Supabase (PostgreSQL)
 
-If your database scales up, or you need enterprise Postgres features (such as pg_vector for embedding vector stores, pg_cron for database-level scheduling, and Row-Level Security), easily migrate your data layer.
+Upgrade your data layer for enterprise features and high-volume workloads.
 
-👉 **[View Option 1 Setup Guide (Supabase Migration)](options_setup/option1_supabase.md)**
-
----
-
-### Option 2: Add SonarQube for Automated Quality Gates
-
-ISF integrates natively with SonarQube to provide continuous static code analysis and quality assurance on auto-pilot:
-
-- **Scheduled Test Coverage Reports:** A cron job periodically triggers unit tests, generates coverage reports, and uploads them to SonarQube.
-- **Auto-Remediation loops:** ISF reads code smells and security hotspot vulnerabilities directly from SonarQube APIs, refactors the source code to resolve the warning, and re-scans the repository to ensure quality gate compliance.
-
-👉 **[View Option 2 Setup Guide (SonarQube Integration)](options_setup/option2_sonarqube.md)**
+- 🗄️ <span style="color:#2b6cb0;">**Enterprise DB:**</span> Unlocks `pg_vector` (embedding), `pg_cron` (scheduling), and Row-Level Security.
+- 👉 **[View Option 1 Setup Guide](options_setup/option1_supabase.md)**
 
 ---
 
-### Option 3: Connect to a Mobile Command Center (Telegram Integration)
+### 🛡️ Option 2: SonarQube Auto-Quality Gates
 
-Take your factory with you in your pocket. By configuring a private Telegram bot, you can securely interact with your AI workers from anywhere on your phone:
+Continuous static code analysis and auto-remediation on auto-pilot.
 
-- **Direct Chat:** Task your agent, ask questions, or review design blueprints via chat.
-- **Real-time Alerts:** Receive push notifications containing live agent progress, screenshots of browser runs, and reports when self-healing test loops complete.
-
-👉 **[View Option 3 Setup Guide (Telegram Command Center)](options_setup/option3_telegram.md)**
-
----
-
-### Option 4: Enable Real-Time Web Intelligence (Tavily Search Engine)
-
-Standard LLMs are limited by knowledge cutoff dates. Integrating **Tavily** equips your agents with search engines optimized specifically for AI agent retrieval:
-
-- **`/web-search` & `/deep-research`:** Run multi-step recursive search workflows.
-- **Autonomous Documentation Ingestion:** Before writing code, agents can crawl live GitHub issues, StackOverflow threads, and official framework docs to ensure they use up-to-date, non-deprecated syntax.
-
-👉 **[View Option 4 Setup Guide (Tavily Web Intelligence)](options_setup/option4_tavily.md)**
+- 📉 <span style="color:#38a169;">**Test & Coverage Scans:**</span> Scheduled cron jobs trigger unit tests and upload coverage.
+- 🛠️ <span style="color:#d97706;">**Auto-Fix Loops:**</span> AI reads vulnerabilities and refactors the code automatically to pass gates.
+- 👉 **[View Option 2 Setup Guide](options_setup/option2_sonarqube.md)**
 
 ---
 
-### Option 5: Deploy the Federated AI Database Agent (`db_agent`)
+### 📱 Option 3: Telegram Mobile Command Center
 
-No more writing raw SQL to inspect your workspace data. Ask questions about system metrics or chat histories in plain, natural language:
+Take your factory in your pocket. Interact securely with AI workers from your phone.
 
-- **Zero SQL Barrier:** Query chat histories or job logs in plain English.
-- **Visual Vega-Lite Plots:** Automatically translates your data queries into rich, interactive dashboards.
-
-👉 **[View Option 5 Setup Guide (Federated DB Agent)](options_setup/option5_db_agent.md)**
-
----
-
-### Option 6: Enable Agentic Web Navigation (Browser Automation & Playwright)
-
-Equip your agents with virtual "hands" to navigate the web. Using headless Chrome containers controlled via Playwright, your agents can perform browser-automation tasks:
-
-- **Administrative Automation:** Automate complex actions like logging into portals (such as Summit, eLeave, or ITSM tools), retrieving leave balances, filing tickets, and approving workflow requests.
-- **Interactive Snapshots:** The agent takes screenshots and tracks console logs at every stage, verifying DOM changes and self-healing when page layouts change.
-
-👉 **[View Option 6 Setup Guide (Browser Automation Setup)](options_setup/option6_browser_automation.md)**
+- 💬 <span style="color:#2b6cb0;">**Direct Chat:**</span> Task your agent, ask questions, or review blueprints via mobile.
+- 🔔 <span style="color:#d97706;">**Real-Time Alerts:**</span> Push notifications for test completion and live progress snapshots.
+- 👉 **[View Option 3 Setup Guide](options_setup/option3_telegram.md)**
 
 ---
 
-### Option 7: Automate Background Tasks (Cron-Scheduled Workflows)
+### 🔍 Option 4: Tavily Real-Time Web Intelligence
 
-Run your development department while you sleep. The built-in Cron Daemon lets you schedule routine engineering and admin workflows to execute periodically:
+Equip agents with an AI-optimized search engine to beat LLM knowledge cutoffs.
 
-- Configure the system to trigger **"Morning Briefings"** (fetching calendar entries, compiling unread high-priority emails, and preparing task lists into a Markdown brief) or **"Weekly Code Sweeps"** (running SonarQube analysis and writing tests).
-- **Direct Control:** Insert or update background jobs in the `cron_scheduled_jobs` database table easily through the Web Dashboard.
+- 🌐 <span style="color:#2b6cb0;">**Deep Research:**</span> Run `/web-search` & `/deep-research` recursive workflows.
+- 📚 <span style="color:#38a169;">**Autonomous Learning:**</span> Agents crawl fresh API docs and StackOverflow before writing code.
+- 👉 **[View Option 4 Setup Guide](options_setup/option4_tavily.md)**
 
-👉 **[View Option 7 Setup Guide (Cron Scheduling Workflow)](options_setup/option7_cron_workflows.md)**
+---
+
+### 📊 Option 5: Federated AI Database Agent
+
+Stop writing raw SQL. Query workspace data in natural English.
+
+- 🗣️ <span style="color:#2b6cb0;">**Zero SQL Barrier:**</span> "Show me chat usage from yesterday."
+- 📈 <span style="color:#38a169;">**Visual Dashboards:**</span> Automatically generate rich Vega-Lite interactive plots.
+- 👉 **[View Option 5 Setup Guide](options_setup/option5_db_agent.md)**
+
+---
+
+### 🤖 Option 6: Browser Automation & Playwright
+
+Give your agents virtual hands to navigate portals and perform admin tasks.
+
+- 🌍 <span style="color:#2b6cb0;">**Web Navigation:**</span> Auto-login, file tickets, or approve workflows in portals.
+- 📸 <span style="color:#d97706;">**Visual Self-Healing:**</span> Captures DOM snapshots and console logs to self-correct during navigation.
+- 👉 **[View Option 6 Setup Guide](options_setup/option6_browser_automation.md)**
+
+---
+
+### ⚙️ Option 7: Cron-Scheduled Workflows
+
+Run your development department while you sleep.
+
+- 🧹 <span style="color:#38a169;">**Routine Maintenance:**</span> Auto-trigger Weekly Code Sweeps or Morning Briefings.
+- 🎛️ <span style="color:#2b6cb0;">**Direct Control:**</span> Manage all background jobs right from the Web Dashboard.
+- 👉 **[View Option 7 Setup Guide](options_setup/option7_cron_workflows.md)**
+
+---
+
+### 🌐 Option 8: Secure Nginx Proxy (HTTP/2 Multiplexing)
+
+Bypass the strict browser limit of 6 concurrent HTTP/1 connections per domain, allowing you to run massive parallel AI workflows without streams stalling in a `Pending` state.
+
+- 🚦 <span style="color:#38a169;">**HTTP/2 Multiplexing:**</span> Consolidate dozens of concurrent SSE (Server-Sent Events) chat streams over a single TCP connection.
+- 🔒 <span style="color:#2b6cb0;">**Self-Signed SSL:**</span> Provides instant local HTTPS required by modern browsers to enable HTTP/2 natively.
+- 👉 **[View Option 8 Setup Guide](options_setup/option8_nginx_http2_proxy.md#12-secure-nginx-reverse-proxy--http2-multiplexing)**
+
+---
+
+### 🧠 Option 9: Mnemon Persistent Cross-Session Memory
+
+Give your AI agents long-term memory that survives container rebuilds and weeks between conversations. Never re-investigate a solved problem again.
+
+- 🔁 <span style="color:#38a169;">**Cross-Session Recall:**</span> Agents remember bugs, decisions, and commands across sessions automatically.
+- 🔗 <span style="color:#2b6cb0;">**Knowledge Graph Linking:**</span> Bug→fix and decision→rationale edges surface related context instantly.
+- 🧹 <span style="color:#d97706;">**Auto-Compaction:**</span> Low-importance memories are garbage-collected over time, keeping the graph lean.
+- 👉 **[View Option 9 Setup Guide](options_setup/option9_mnemon_memory.md)**
 
 ---
 

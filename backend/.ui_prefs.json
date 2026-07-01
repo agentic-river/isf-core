@@ -1,0 +1,4 @@
+{
+    "telegram_bot_enabled": true,
+    "grader_worker_enabled": false
+}

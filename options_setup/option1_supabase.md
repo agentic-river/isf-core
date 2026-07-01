@@ -72,7 +72,7 @@ Once your PostgreSQL instance is running, you must initialize the complete datab
 
 The canonical schema definition script is located in your repository at:
 📂 **`isf-core/supabase-docker/supabase_schema_init.sql`**  
-*(Derived from the template source at `scaffold_templates/supabase-docker/supabase_schema_init.sql`)*
+*(Derived from the template source at `github_isf_core/supabase-docker/supabase_schema_init.sql`)*
 
 ### How to Apply the Migration:
 

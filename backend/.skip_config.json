@@ -1,0 +1,1 @@
+{"core_skip": ["mnemon", "sonarqube", "supabase_db_agent", "supabase", "telegram_bot"], "mcp_skip": ["gateway", "playwright", "janus_pro", "vector_graph_rag"]}

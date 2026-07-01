@@ -10,6 +10,7 @@ models:
     model_id: gemini-3.1-flash-lite-preview
     description: Smallest and most cost effective model, built for at scale usage.
     cost_input_per_1m: 0.25
+    cost_input_cache_hit_per_1m: 0.025
     cost_output_per_1m: 1.5
   gemini-3.5-flash:
     provider: gemini
@@ -18,6 +19,7 @@ models:
       Hybrid reasoning model which supports a 1M token context window and
       has thinking budgets.
     cost_input_per_1m: 1.5
+    cost_input_cache_hit_per_1m: 0.15
     cost_output_per_1m: 9.0
   gemini-thinking:
     provider: gemini
@@ -32,12 +34,14 @@ models:
     model_id: gemini-3.1-pro-preview-customtools
     description: Built for custom tools, combining frontier intelligence
     cost_input_per_1m: 2.0
+    cost_input_cache_hit_per_1m: 0.20
     cost_output_per_1m: 12.0
   gemini-powerful:
     provider: gemini
     model_id: gemini-3.1-pro-preview
     description: Most powerful agentic and vibe-coding model.
     cost_input_per_1m: 2.0
+    cost_input_cache_hit_per_1m: 0.20
     cost_output_per_1m: 12.0
   gemini-embedding:
     provider: gemini
@@ -51,6 +55,7 @@ models:
     base_url: https://api.deepseek.com
     description: DeepSeek's latest frontier pro model with reasoning capabilities.
     cost_input_per_1m: 0.435
+    cost_input_cache_hit_per_1m: 0.003625
     cost_output_per_1m: 0.87
   deepseek-v4-flash:
     provider: deepseek
@@ -58,74 +63,60 @@ models:
     base_url: https://api.deepseek.com
     description: DeepSeek's latest frontier flash model with reasoning capabilities.
     cost_input_per_1m: 0.14
+    cost_input_cache_hit_per_1m: 0.0028
     cost_output_per_1m: 0.28
   claude-4-8-opus:
     provider: anthropic
     model_id: claude-opus-4-8
     description: Anthropic's highest performing model.
     cost_input_per_1m: 5.0
+    cost_input_cache_hit_per_1m: 0.5
     cost_output_per_1m: 25.0
   claude-4-6-sonnet:
     provider: anthropic
     model_id: claude-sonnet-4-6
     description: Anthropic's most intelligent model.
     cost_input_per_1m: 3.0
+    cost_input_cache_hit_per_1m: 0.3
     cost_output_per_1m: 15.0
   claude-4-5-haiku:
     provider: anthropic
     model_id: claude-haiku-4-5-20251001
     description: Anthropic's fast and cost-effective model.
     cost_input_per_1m: 1.0
+    cost_input_cache_hit_per_1m: 0.1
     cost_output_per_1m: 5.0
 
-  qwen-plus-latest:
-    provider: alibaba
-    model_id: qwen-plus-latest
-    description: Alibaba Qwen Plus Latest model.
-    cost_input_per_1m: 0.4
-    cost_output_per_1m: 1.2
   qwen3.7-plus:
     provider: alibaba
     model_id: qwen3.7-plus
     description: Alibaba Qwen3.7 Plus model.
     cost_input_per_1m: 0.4
+    cost_input_cache_hit_per_1m: 0.04
     cost_output_per_1m: 1.6
   qwen3.7-max:
     provider: alibaba
     model_id: qwen3.7-max
     description: Alibaba Qwen3.7 Max model.
     cost_input_per_1m: 2.5
+    cost_input_cache_hit_per_1m: 0.25
     cost_output_per_1m: 7.5
-  qwen3.6-plus:
-    provider: alibaba
-    model_id: qwen3.6-plus
-    description: Alibaba Qwen3.6 Plus model.
-    cost_input_per_1m: 0.5
-    cost_output_per_1m: 3.0
   qwen3.6-flash:
     provider: alibaba
     model_id: qwen3.6-flash
     description: Alibaba Qwen3.6 Flash model.
     cost_input_per_1m: 0.1875
+    cost_input_cache_hit_per_1m: 0.01875
     cost_output_per_1m: 1.125
-  qwen3-max:
-    provider: alibaba
-    model_id: qwen3-max
-    description: Alibaba Qwen3 Max model.
-    cost_input_per_1m: 1.2
-    cost_output_per_1m: 6.0
-  qwen3-max-preview:
-    provider: alibaba
-    model_id: qwen3-max-preview
-    description: Alibaba Qwen3 Max Preview model.
-    cost_input_per_1m: 1.2
-    cost_output_per_1m: 6.0
-  glm-5.1:
-    provider: alibaba
-    model_id: glm-5.1
-    description: GLM-5.1 model from Zhipu, hosted on compatible API.
-    cost_input_per_1m: 1.4
-    cost_output_per_1m: 4.4
+
+  glm-5.2:
+    provider: zai
+    model_id: glm-5.2
+    base_url: https://api.z.ai/api/paas/v4/
+    description: Z.AI GLM-5.2 flagship — 1M context, 128K max output, thinking mode, strong coding. 0.70 per 1M tokens.
+    cost_input_per_1m: 1.40
+    cost_input_cache_hit_per_1m: 0.26
+    cost_output_per_1m: 4.40
 
   kimi-k2.7-code:
     provider: kimi
@@ -133,6 +124,7 @@ models:
     base_url: https://api.moonshot.ai/v1
     description: Kimi K2.7 Code — strongest coding model with thinking always on. 256K context.
     cost_input_per_1m: 0.95
+    cost_input_cache_hit_per_1m: 0.16
     cost_output_per_1m: 4.00
   kimi-k2.7-code-highspeed:
     provider: kimi
@@ -140,6 +132,7 @@ models:
     base_url: https://api.moonshot.ai/v1
     description: Kimi K2.7 Code HighSpeed — fast variant, ~180 tok/s output. 256K context.
     cost_input_per_1m: 1.90
+    cost_input_cache_hit_per_1m: 0.32
     cost_output_per_1m: 8.00
   kimi-k2.6:
     provider: kimi
@@ -147,6 +140,7 @@ models:
     base_url: https://api.moonshot.ai/v1
     description: Kimi K2.6 — most intelligent general-purpose model. Multimodal, 256K context.
     cost_input_per_1m: 0.95
+    cost_input_cache_hit_per_1m: 0.16
     cost_output_per_1m: 4.00
   kimi-k2.5:
     provider: kimi
@@ -154,6 +148,7 @@ models:
     base_url: https://api.moonshot.ai/v1
     description: Kimi K2.5 — multimodal model supporting text, image, and video. 256K context.
     cost_input_per_1m: 0.60
+    cost_input_cache_hit_per_1m: 0.10
     cost_output_per_1m: 3.00
 
   # --- Ollama Local Models ---
@@ -164,16 +159,17 @@ models:
     cost_input_per_1m: 0.0
     cost_output_per_1m: 0.0
 roles:
-  default: gemini-3.5-flash
-  fast: gemini-flash-lite
-  planner: gemini-powerful
+  default: deepseek-v4-pro
+  fast: deepseek-v4-flash
+  planner: deepseek-v4-pro
   coder: deepseek-v4-pro
-  critique: gemini-powerful
-  tester: gemini-powerful
-  sonar_fixer: gemini-3.5-flash
-  testing_engineer: gemini-3.5-flash
-  auto_agent: gemini-powerful
-  expert: gemini-powerful
-  mermaid_syntax_corrector: gemini-powerful
+  critique: deepseek-v4-pro
+  tester: deepseek-v4-pro
+  sonar_fixer: deepseek-v4-pro
+  testing_engineer: deepseek-v4-pro
+  auto_agent: deepseek-v4-pro
+  expert: deepseek-v4-pro
+  mermaid_syntax_corrector: deepseek-v4-pro
+  rule_grader: deepseek-v4-flash
+
   embedding: gemini-embedding
-  rule_grader: gemini-flash-lite

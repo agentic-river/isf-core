@@ -13,15 +13,11 @@ ISF-Core V2 moved away from a containerized browser to a Host-Native MCP Server.
    uv venv
    uv pip sync requirements.txt
    ```
-2. **(Optional) Compile the Daemon:** For optimal performance, you can compile the AI Manager package into a Nuitka module:
+2. **Start the Playwright MCP Server:** Use the provided startup script:
    ```bash
-   ./build_ai_manager_daemon.sh
+   ./start_playwright_mcp_server.sh
    ```
-3. **Start the AI Manager Daemon:** Use the provided startup script:
-   ```bash
-   ./start_ai_manager_daemon.sh
-   ```
-   This will launch the daemon (running `ai_manager/daemon.py`) natively on your host machine, which automatically routes traffic via the backend MCP Gateway.
+   This will launch the Playwright MCP server (running `ai_manager/playwright_mcp.py`) natively on your host machine on port 8899, which the backend connects to via `http://host.docker.internal:8899/sse`.
 
 ---
 
@@ -42,7 +38,7 @@ The easiest and recommended way to manage this is directly through the Chat UI:
 
 ## 3. Usage (The Discovery & Fast-Track Workflow)
 
-Once the daemon is running and credentials are in the vault, you can begin automating web tasks. The optimal workflow leverages the AI to do the heavy lifting:
+Once the server is running and credentials are in the vault, you can begin automating web tasks. The optimal workflow leverages the AI to do the heavy lifting:
 
 ### Step A: Site Discovery (Slow Path)
 Use the Chat AI to manually explore the target site.

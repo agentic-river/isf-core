@@ -86,7 +86,7 @@ get_sonar_issues_by_filename("path/to/file.py")
 After all fixes are verified, you MUST remove any temporary working files created during the session:
 
 - Delete any test scripts, debug logs, or intermediate artifacts you wrote.
-- Do NOT delete production code, configuration files, or persistent data (e.g., `backend/data/browser_sessions/*.json`).
+- Do NOT delete production code, configuration files, or persistent data (e.g., `.browser_sessions/*.json`).
 - Use `execute_shell_command` with `rm` to remove files, or `git checkout` to revert unintended changes.
 
 ---
@@ -201,6 +201,7 @@ The Sonar fixing workflow integrates with other AI agent tools:
 - 🔴 **Never** introduce new Pyright type errors or Ruff warnings while fixing Sonar issues.
 - 🔴 **Never** call `run_tests` without a specific test filename as `target_path`. Running the entire codebase suite (80+ test scripts) concurrently will cause severe timeouts, resource exhaustion, and block development.
 - 🔴 **Never** leave temporary scripts, debug files, or intermediate artifacts in the workspace after completing a fix session. Always clean up before finishing.
+- 🔴 **Never** strip module prefixes from Python coverage XML paths (e.g., `backend/core/file.py` → `core/file.py`). The `sonar.python.coverage.reportPaths` property is set at the project root level — not per-module. Stripping the prefix causes SonarQube to resolve `/app/core/file.py` instead of `/app/backend/core/file.py`, resulting in 0% coverage for all Python modules. See `docs/Sonar_Tools_And_Workflow.md` §6 for the full pipeline explanation.
 
 ---
 

@@ -29,7 +29,7 @@ Agents must follow this strict sequence for web tasks:
      - A `TASK_METADATA` dictionary defining the tool `name`, `description`, `domain` (for credential lookup), and `schema`.
      - An `async def run_task(inputs, credentials)` entry point.
      - Defensive validation to ensure `credentials` contains the required keys before interaction.
-     - Logic to handle `.json` state caching in the persistent volume `/app/backend/data/browser_sessions` (NOT a relative `sessions/` path) to bypass future logins and avoid Docker permission errors.
+      - Logic to handle `.json` state caching in the persistent volume `/workspace/.browser_sessions` (NOT a relative `sessions/` path) to bypass future logins and avoid Docker permission errors.
 3. **Phase 3 - Fast Path Execution:** Scripts compiled into `browser-agents/` must be dynamically registered as first-class tools (e.g., `manage_employee_leave_portal`). Future identical requests must be routed directly to this compiled tool, completely skipping the Discovery mode.
 
 ## 3. Fast Path Script Generation & Refinement Rules
@@ -37,7 +37,7 @@ When the AI generates or refines Python scripts for `browser-agents/`, it must a
 - **Avoid Brittle Selectors:** NEVER use exact HTML table indices or rigid DOM paths. Use text-based filtering (e.g., `locator('tr').filter(has_text='Annual')`).
 - **Robust Navigation (ASP.NET/SPA):** Handle postbacks and dynamic loads safely. Prefer `page.wait_for_load_state('networkidle')` or explicit element waits over deprecated `wait_for_navigation`.
 - **Credential Mapping:** Ensure custom parameters (e.g., `COMPANY_NAME`) are correctly extracted from the `input_schema` JSONB field of the `browser_credentials` table rather than hardcoded.
-- **State Caching:** Leverage saved authentication states using the absolute persistent volume path (e.g., `/app/backend/data/browser_sessions/*.json`) to skip login screens and accelerate script execution. NEVER use relative paths like `sessions/` as they will cause permission errors in the Docker container.
+- **State Caching:** Leverage saved authentication states using the absolute persistent volume path (e.g., `/workspace/.browser_sessions/*.json`) to skip login screens and accelerate script execution. NEVER use relative paths like `sessions/` as they will cause permission errors in the Docker container.
 - **Security & Naming:** All `agent_id` identifiers MUST be validated against a strict regular expression `r"^[a-zA-Z0-9_]+$"` to ensure they only contain alphanumeric characters and underscores, preventing path traversal and ensuring consistent filenames.
 - **DNS Resiliency inside Docker (MANDATORY):** Headless Chromium inside Docker containers often fails to resolve private or VPN corporate domains due to its built-in asynchronous DNS engine. You MUST launch Chromium with the `--disable-features=AsyncDns` flag to force it to use the container's standard OS-level DNS resolver (e.g., `await p.chromium.launch(headless=True, args=["--disable-features=AsyncDns"])`).
 
@@ -50,7 +50,7 @@ If the test harness fails or throws an error (such as a database schema mapping 
 
 
 ## 5. Phase 5 - Workspace Cleanup (MANDATORY)
-Agents MUST clean up any temporary scripts, debug logs, intermediate state files, or leftover artifacts (excluding expected persistent session caches like `/app/backend/data/browser_sessions/*.json`) created during the discovery, compilation, or testing phases of a task. Maintaining a clean workspace upon task completion is critical to avoiding repository clutter and potential conflicts in future runs.
+Agents MUST clean up any temporary scripts, debug logs, intermediate state files, or leftover artifacts (excluding expected persistent session caches like `/workspace/.browser_sessions/*.json`) created during the discovery, compilation, or testing phases of a task. Maintaining a clean workspace upon task completion is critical to avoiding repository clutter and potential conflicts in future runs.
 
 ## 6. Fast Path Design Template (MANDATORY)
 All "Fast Path" scripts in `browser-agents/` MUST follow this structure to ensure compatibility with the vault and backend routing:
@@ -83,7 +83,7 @@ async def run_task(inputs: Dict[str, Any], credentials: Dict[str, Any]):
         }
 
     # 2. Define Persistent Session Directory (MANDATORY)
-    SESSION_DIR = '/app/backend/data/browser_sessions'
+    SESSION_DIR = '/workspace/.browser_sessions'
     os.makedirs(SESSION_DIR, exist_ok=True)
     session_path = os.path.join(SESSION_DIR, f"{TASK_METADATA['name']}.json")
 
