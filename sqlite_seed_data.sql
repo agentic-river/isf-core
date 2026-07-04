@@ -56,8 +56,8 @@ VALUES (
     1,
     'ISOLATED_PROCESS',
     'Cron_Daemon',
-    '{"module": "backend.tasks.auto_agent_task"}',
-    '{"module": "backend.tasks.auto_agent_task"}',
+    '{"module": "cron_tasks.auto_agent_task"}',
+    '{"module": "cron_tasks.auto_agent_task"}',
     0
 );
 
@@ -66,12 +66,12 @@ VALUES (
     3,
     'Auto Test Coverage Enhancer',
     'Autonomously writes, runs, and self-heals unit/component tests to improve codebase coverage.',
-    '*/5 * * * *',
-    0,
-    'HTTP_WEBHOOK',
+    '37 * * * *',
+    1,
+    'ISOLATED_PROCESS',
     'Cron_Daemon',
-    '{"url": "http://127.0.0.1:8002/api/webhooks/test_coverage_loop", "method": "POST", "headers": {}, "body": null}',
-    '{"url": "http://127.0.0.1:8002/api/webhooks/test_coverage_loop", "method": "POST", "headers": {}, "body": null}',
+    '{"module": "cron_tasks.test_coverage_task"}',
+    '{"module": "cron_tasks.test_coverage_task"}',
     0
 );
 
@@ -81,11 +81,11 @@ VALUES (
     'Token Usage Housekeeping',
     'Runs housekeeping of recorded token counts.',
     '1,2 * * * *',
-    0,
-    'HTTP_WEBHOOK',
+    1,
+    'ISOLATED_PROCESS',
     'Cron_Daemon',
-    '{"url": "http://localhost:8002/api/webhooks/token_housekeeping", "method": "POST", "headers": {}, "body": null}',
-    '{"url": "http://localhost:8002/api/webhooks/token_housekeeping", "method": "POST", "headers": {}, "body": null}',
+    '{"module": "cron_tasks.token_usage_housekeeping"}',
+    '{"module": "cron_tasks.token_usage_housekeeping"}',
     0
 );
 
@@ -94,11 +94,39 @@ VALUES (
     5,
     'Auto Sonar Issue Fixer',
     'Automatically fixes Sonar issues in the codebase in a loop (max 10 iterations) every 15 minutes.',
-    '*/30 * * * *',
-    0,
-    'HTTP_WEBHOOK',
+    '7 * * * *',
+    1,
+    'ISOLATED_PROCESS',
     'Cron_Daemon',
-    '{"url": "http://127.0.0.1:8002/api/webhooks/sonar_fix_loop", "method": "POST", "headers": {}, "body": null}',
-    '{"url": "http://127.0.0.1:8002/api/webhooks/sonar_fix_loop", "method": "POST", "headers": {}, "body": null}',
+    '{"module": "cron_tasks.sonar_fix_task"}',
+    '{"module": "cron_tasks.sonar_fix_task"}',
+    0
+);
+
+INSERT INTO cron_scheduled_jobs (id, job_name, description, cron_expression, is_active, target_type, job_type, target_payload, target_payload_json, is_deleted)
+VALUES (
+    6,
+    'browser_session_cleanup',
+    'Cleans up stale browser sessions.',
+    '*/15 * * * *',
+    1,
+    'ISOLATED_PROCESS',
+    'Cron_Daemon',
+    '{"module": "cron_tasks.browser_session_cleanup"}',
+    '{"module": "cron_tasks.browser_session_cleanup"}',
+    0
+);
+
+INSERT INTO cron_scheduled_jobs (id, job_name, description, cron_expression, is_active, target_type, job_type, target_payload, target_payload_json, is_deleted)
+VALUES (
+    7,
+    'log_housekeeping',
+    'Prunes database logs older than 3 days directly in the Database engine.',
+    '0 */3 * * *',
+    1,
+    'ISOLATED_PROCESS',
+    'Cron_Daemon',
+    '{"module": "cron_tasks.log_housekeeping"}',
+    '{"module": "cron_tasks.log_housekeeping"}',
     0
 );
