@@ -98,6 +98,8 @@ When creating standalone Python tasks to execute via the `Cron_Daemon` as an `IS
     }
     ```
 
+5.  **Workspace Safety Protocol (Concurrent Agents):** Any autonomous AI agent executed via cron tasks MUST strictly adhere to `@rules/Workspace_Safety_Protocol.md`. The cron task wrapper MUST forcefully inject a system instruction reminding the AI agent to never run destructive git commands (e.g., `git restore`, `git clean`, `git reset`) that could discard untracked or uncommitted changes made by concurrent user activity or other AI agents.
+
 ---
 
 ## 5. Execution Logging Protocol
