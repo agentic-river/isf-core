@@ -278,7 +278,7 @@ You'll notice this deployment includes **two** containers:
 | Container  | Purpose                                                                   |
 | ---------- | ------------------------------------------------------------------------- |
 | `isf-core` | The factory engine — orchestrates agents, manages workflows, stores data  |
-| `ai-proxy` | A dedicated LLM gateway — routes requests to Gemini, DeepSeek, and OpenAI |
+| `ai-proxy` | A dedicated LLM gateway — routes requests to Gemini, DeepSeek, and OpenAI. Also supports **virtual developer keys** for team-based token spend tracking. |
 
 **This separation is intentional and critical for security:**
 
@@ -286,8 +286,11 @@ You'll notice this deployment includes **two** containers:
 - **Infrastructure Boundary:** In production or team environments, the `ai-proxy` can run on a separate machine with restricted network access, while `isf-core` runs on developer workstations. The proxy is a single choke-point for auditing and rate-limiting LLM usage.
 - **Independent Scaling:** The ai-proxy can be scaled horizontally (multiple instances behind a load balancer) without touching the factory engine.
 - **Provider Rotation:** Switching LLM providers or rotating keys requires restarting only the proxy — not the entire factory.
+- **Virtual Developer Keys (Optional):** With `ENABLE_VIRTUAL_KEY=true`, you can generate per-developer, per-project API keys (`sk-virt-xxx`) that track token consumption, cache hits/misses, and cost in real-time. A built-in Admin CLI (`virtual_key_admin.py`) lets you generate, revoke, and export usage to CSV — no frontend UI required. The proxy defaults to `false` so this adds **zero overhead** until you opt in.
 
 > 💡 **Best Practice:** Keep `.env.ai_proxy` in your host's secure filesystem. Never commit it to version control (it's already in `.gitignore`).
+
+> 🔑 **Virtual Keys for Teams:** When `ENABLE_VIRTUAL_KEY=true`, developer keys are stored in `data/virtual_key_admin.yml` and token spend logs persist in `data/proxy_usage.db` (SQLite) or Supabase (PostgreSQL). See **[Option 10: AI Proxy Virtual Keys](options_setup/option10_virtual_keys.md)** for full setup instructions.
 
 ---
 
@@ -454,6 +457,19 @@ Give your AI agents long-term memory that survives container rebuilds and weeks 
 - 🔗 <span style="color:#2b6cb0;">**Knowledge Graph Linking:**</span> Bug→fix and decision→rationale edges surface related context instantly.
 - 🧹 <span style="color:#d97706;">**Auto-Compaction:**</span> Low-importance memories are garbage-collected over time, keeping the graph lean.
 - 👉 **[View Option 9 Setup Guide](options_setup/option9_mnemon_memory.md)**
+
+---
+
+### 🔑 Option 10: AI Proxy Virtual Keys & Token Spend Tracking
+
+Assign individual virtual developer keys to your team members, track token consumption per project in real-time, and export granular billing reports — all without touching the frontend.
+
+- 🔑 **Virtual Developer Keys:** Generate `sk-virt-xxx` keys for each developer. One developer can have multiple keys for different projects (e.g., `project_alpha`, `personal_testing`).
+- 💰 **Automatic Cost Tracking:** Every LLM request is logged with `token_in`, `token_out`, `cache_hit`, `cache_miss`, and calculated `cost_usd` based on real model pricing from `models.yaml`.
+- 🗄️ **Database Fallback:** Supabase (PostgreSQL) if available, SQLite if not — zero configuration required. Data persists in `./data/` on the host filesystem.
+- 🛠️ **Admin CLI Tool:** `python ai_proxy/virtual_key_admin.py generate|revoke|list|export-csv` — no frontend UI needed. Export monthly CSV reports grouped by developer, project, and model.
+- 🚦 **Zero Overhead by Default:** Feature flag `ENABLE_VIRTUAL_KEY` defaults to `false`. Proxy behaves exactly as before until you opt in.
+- 👉 **[View Option 10 Setup Guide](options_setup/option10_virtual_keys.md)**
 
 ---
 

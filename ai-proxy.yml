@@ -8,6 +8,11 @@ services:
       - "8066:8080"
     env_file:
       - .env.ai_proxy
+    environment:
+      - ENABLE_VIRTUAL_KEY=${ENABLE_VIRTUAL_KEY:-false}
+      - DATABASE_URL=${VIRTUAL_KEY_DB_URL:-}
+      - VIRTUAL_KEY_YAML_PATH=/app/data/virtual_key_admin.yml
+      - DATA_DIR=/app/data
     volumes:
       - ./data/proxy_data:/app/data
       - ./models.yaml:/app/models.yaml

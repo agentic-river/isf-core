@@ -172,4 +172,7 @@ roles:
   mermaid_syntax_corrector: deepseek-v4-pro
   rule_grader: deepseek-v4-flash
 
+  # AI OCR tools role — must point to a vision-capable model
+  ocr: gemini-flash-lite
+
   embedding: gemini-embedding
