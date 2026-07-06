@@ -206,6 +206,30 @@ Before getting started, ensure your system meets the following requirements:
 3. **Git:** Installed
 4. **Python:** 3.12 (recommended)
 
+
+## 🚀 Quick Start
+
+Watch this quick 10-minute video to see how to install, configure, and launch your own local Infinite Software Factory!
+
+<p align="center">
+  <a href="https://youtu.be/6ZkgnZ8eLYY" target="_blank">
+    <img src="pics/isf-core-demo-thumbnail.png" alt="ISF Core Setup Guide Video" width="800" />
+  </a>
+</p>
+
+If you want to build a clean, standalone custom application and don't need the full core workspace configs, use our official lightweight starter-kit:
+
+👉 **[Click Here to Generate a New Project Template](https://github.com/agentic-river/isf-new-project/generate)**
+
+Alternatively, clone the template directly:
+
+```bash
+git clone https://github.com/agentic-river/isf-new-project.git my-ai-project
+cd my-ai-project
+
+```
+
+
 ## 🚀 How to Run the Software Factory
 
 The Infinite Software Factory operates in a two-tier repository architecture:
@@ -252,22 +276,6 @@ python start_isf_core.py
 ```
 
 🎉 Open **`http://localhost:3006`** in your browser! Your local software department is live.
-
----
-
-## 🚀 Quick Start
-
-If you want to build a clean, standalone custom application and don't need the full core workspace configs, use our official lightweight starter-kit:
-
-👉 **[Click Here to Generate a New Project Template](https://github.com/agentic-river/isf-new-project/generate)**
-
-Alternatively, clone the template directly:
-
-```bash
-git clone https://github.com/agentic-river/isf-new-project.git my-ai-project
-cd my-ai-project
-python start_isf_core.py
-```
 
 ---
 
