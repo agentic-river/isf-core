@@ -212,7 +212,7 @@ Before getting started, ensure your system meets the following requirements:
 Watch this quick 10-minute video to see how to install, configure, and launch your own local Infinite Software Factory!
 
 <p align="center">
-  <a href="https://youtu.be/6ZkgnZ8eLYY" target="_blank">
+  <a href="https://youtu.be/qvIyEWQCVxo" target="_blank">
     <img src="pics/isf-core-demo-thumbnail.png" alt="ISF Core Setup Guide Video" width="800" />
   </a>
 </p>
