@@ -51,10 +51,10 @@ Update your `.env` file at the root of your `isf-core` directory to include your
 
 1. Rebuild and restart your container stack to apply the new credentials:
    ```bash
-   docker compose down
+   python shutdown_isf_core.py
    ```
    ```bash
-   docker compose up -d
+   python start_isf_core.py
    ```
 2. Open Telegram, open the chat with your newly created bot, and click `/start`.
 3. Test communication by sending a message like:

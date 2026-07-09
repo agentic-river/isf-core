@@ -258,6 +258,7 @@ Set up your AI Proxy credentials to route agent requests securely to your chosen
 
 ```bash
 cp .env.ai_proxy.example .env.ai_proxy
+cp .env.sample .env
 
 # Open and add your API keys (e.g., GOOGLE_API_KEY, DEEPSEEK_API_KEY)
 code .env.ai_proxy

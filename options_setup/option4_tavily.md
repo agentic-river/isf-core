@@ -37,7 +37,7 @@ Update your `.env` file at the root of your `isf-core` directory to include your
 
 You can test if your search engine is working using the interactive workspace console or by invoking a search command via your dashboard chat:
 
-1. Open the ISF-Core Web Workspace (`http://localhost:3001`).
+1. Open the ISF-Core Web Workspace (`http://localhost:3006`).
 2. Ask your agent:
    > *"Run deep research on the differences between React 18 and React 19 server components."*
 3. The engine will spin up a research worker, execute parallel web queries, scrape relevant articles, synthesize the facts, and output a detailed Markdown report with inline citations!

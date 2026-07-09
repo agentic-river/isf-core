@@ -29,10 +29,10 @@ def main():
 
     # 4. Execute compose commands
     print("\n🔄 Pulling latest images from Docker Hub (this may take a moment)...")
-    subprocess.run(["docker", "compose", "-f", compose_file, "pull"])
-    
+    subprocess.run(["docker", "compose", "--env-file", ".env", "-f", compose_file, "pull"])
+
     print(f"\n🚀 Starting containers using {compose_file}...")
-    result = subprocess.run(["docker", "compose", "-f", compose_file, "up", "-d"])
+    result = subprocess.run(["docker", "compose", "--env-file", ".env", "-f", compose_file, "up", "-d"])
     
     if result.returncode == 0:
         print("\n" + "="*50)

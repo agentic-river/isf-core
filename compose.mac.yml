@@ -37,10 +37,10 @@ services:
       # - SONAR_TOKEN=${SONAR_TOKEN}
 
       # --- NO SUPABASE (SQLite Fallback Mode) ---
-      - SUPABASE_URL=
-      - SUPABASE_KEY=
-      - SUPABASE_SERVICE_ROLE_KEY=
-      - SUPABASE_DB_URL=
+      - SUPABASE_URL=${SUPABASE_URL:-}
+      - SUPABASE_KEY=${ANON_KEY:-}
+      - SUPABASE_SERVICE_ROLE_KEY=${SERVICE_ROLE_KEY:-}
+      - SUPABASE_DB_URL=postgresql://postgres:${POSTGRES_PASSWORD}@host.docker.internal:${POSTGRES_PORT:-5432}/postgres
 
       # tavily.com
       - TAVILY_API_KEY=${TAVILY_API_KEY}
