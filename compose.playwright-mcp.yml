@@ -1,0 +1,42 @@
+# ==============================================================================
+# compose.playwright-mcp.yml — Bridge-Networked Playwright MCP Server
+#
+# Purpose:  Provides browser automation tools (navigate, snapshot, click, type)
+#           via the Model Context Protocol over SSE on port 8899.
+#           Uses bridge networking with port mapping so the backend container
+#           can reach it at http://host.docker.internal:8899/sse.
+#           (network_mode: host does NOT expose ports to host.docker.internal
+#            on Docker Desktop for Mac — the port gets trapped inside the Linux VM.)
+#
+# Usage:    docker compose -f compose.playwright-mcp.yml up -d
+#           (or integrated via start_up.sh / start_playwright_mcp_server.sh)
+# ==============================================================================
+
+name: playwright-mcp
+
+services:
+  playwright-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile.playwright-mcp
+    image: isf/playwright-mcp:v3.10
+    container_name: playwright-mcp
+    restart: unless-stopped
+    ports:
+      - "8899:8899"
+    environment:
+      - MCP_HOST=0.0.0.0
+      - MCP_PORT=8899
+      - RUNNING_IN_DOCKER=true
+    networks:
+      - playwright-net
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8899/rest/health')\" || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+networks:
+  playwright-net:
+    driver: bridge
